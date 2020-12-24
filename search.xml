@@ -1,29 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2016/09/18/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+    <title>hadoop生态一键启停脚本</title>
+    <url>/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h2 id="kafka集群一键启停脚本"><a href="#kafka集群一键启停脚本" class="headerlink" title="kafka集群一键启停脚本"></a>kafka集群一键启停脚本</h2><h3 id="slave"><a href="#slave" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure>
+
+<h3 id="startkafka-sh"><a href="#startkafka-sh" class="headerlink" title="startkafka.sh"></a>startkafka.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
 
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">        ssh $host &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot; </span><br><span class="line">	echo &quot;$host kafka is running&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<h3 id="stopkafka-sh"><a href="#stopkafka-sh" class="headerlink" title="stopkafka.sh"></a>stopkafka.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;jps |grep Kafka |cut -c 1-5 |xargs kill -s 9 &quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">  ssh $host &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-stop.sh &gt;/dev/null 2&gt;&amp;1 &amp;&quot; </span><br><span class="line">  echo &quot;$host kafka is stopping&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="zookeeper集群一键启停脚本"><a href="#zookeeper集群一键启停脚本" class="headerlink" title="zookeeper集群一键启停脚本"></a>zookeeper集群一键启停脚本</h2><h3 id="slave-1"><a href="#slave-1" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure>
+
+<h3 id="startzk-sh"><a href="#startzk-sh" class="headerlink" title="startzk.sh"></a>startzk.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/zk/bin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup zkServer.sh start &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">	ssh $host &quot;source /etc/profile;nohup zkServer.sh start &gt; /dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">	echo &quot;$host zk is running&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<h3 id="stopzk-sh"><a href="#stopzk-sh" class="headerlink" title="stopzk.sh"></a>stopzk.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/zk/bin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;jps |grep QuorumPeerMain |cut -c 1-4 |xargs kill -s 9&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">	echo &quot;$host zk is stopping&quot;</span><br><span class="line">	ssh $host &quot;source /etc/profile;nohup zkServer.sh stop &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 ]]></content>
-  </entry>
-  <entry>
-    <title>(3)Apache Sqoop hive数据导出mysql</title>
-    <url>/2020/12/22/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/</url>
-    <content><![CDATA[]]></content>
+      <categories>
+        <category>hadoop</category>
+      </categories>
+      <tags>
+        <tag>hadoop</tag>
+        <tag>kafka</tag>
+        <tag>zookeeper</tag>
+      </tags>
   </entry>
   <entry>
     <title>flink</title>
@@ -100,8 +124,19 @@
       </tags>
   </entry>
   <entry>
+    <title>(3)Apache Sqoop hive数据导出mysql</title>
+    <url>/2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>sqoop</category>
+      </categories>
+      <tags>
+        <tag>sqoop</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(2)Apache Sqoop mysql数据导入hive表和hdfs</title>
-    <url>/2019/08/30/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/</url>
+    <url>/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/</url>
     <content><![CDATA[<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p><font color=red>Sqoop测试表数据</font></p>
 <p>在mysql中创建数据库userdb，然后执行sql脚本：</p>
 <p>创建三张表: <strong>emp</strong>雇员表、 <strong>emp_add</strong>雇员地址表、<strong>emp_conn</strong>雇员联系表</p>
@@ -118,12 +153,33 @@
 <p>下面的命令用于从MySQL数据库服务器中的emp表导入HDFS。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line">--connect jdbc:mysql://node03:3306/userdb \</span><br><span class="line">--username root \</span><br><span class="line">--password 123456 \</span><br><span class="line">--delete-target-dir \</span><br><span class="line">--target-dir /sqoopresult \</span><br><span class="line">--table emp --m 1</span><br></pre></td></tr></table></figure>
 
-<p>其中**–target-dir可以用来指定导出数据存放至HDFS的目录；**</p>
+<p>其中 <strong>–target-dir</strong>  可以用来指定导出数据存放至HDFS的目录</p>
 <p><strong>mysql</strong>  <strong>jdbc  url</strong> 请使用 <strong>ip</strong> 地址。</p>
+<p>–m (或*–*num-mappers)参数指定map task数，默认是四个 </p>
+<p> <img src="3.png"></p>
 <p>为了验证在HDFS导入的数据，请使用以下命令查看导入的数据：</p>
-<p>hdfs dfs -cat /sqoopresult/part-m-00000</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hdfs dfs -cat /sqoopresult/part-m-00000</span><br></pre></td></tr></table></figure>
+
+<p><img src="4.png"></p>
 <p>可以看出它会在HDFS上默认用逗号,分隔emp表的数据和字段。可以通过</p>
 <p>–fields-terminated-by ‘\t’来指定分隔符</p>
+<h2 id="全量导入mysql表数据到HIVE"><a href="#全量导入mysql表数据到HIVE" class="headerlink" title="全量导入mysql表数据到HIVE"></a>全量导入mysql表数据到HIVE</h2><h3 id="方式一：先复制表结构到hive中再导入数据"><a href="#方式一：先复制表结构到hive中再导入数据" class="headerlink" title="方式一：先复制表结构到hive中再导入数据"></a>方式一：先复制表结构到hive中再导入数据</h3><p>将关系型数据的表结构复制到hive中</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop <span class="keyword">create</span>-hive-<span class="keyword">table</span> \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node-1:3306/userdb \</span></span><br><span class="line"><span class="comment">--table emp_add \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--hive-table test.emp_add_sp</span></span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<p> –table emp_add为mysql中的数据库sqoopdb中的表。   </p>
+<p> –hive-table emp_add_sp 为hive中新建的表名称。</p>
+<p>从关系数据库导入文件到hive中</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--table emp_add \</span></span><br><span class="line"><span class="comment">--hive-table test.emp_add_sp \</span></span><br><span class="line"><span class="comment">--hive-import \</span></span><br><span class="line"><span class="comment">--m 1</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="0.jpg"></p>
+<h3 id="方式二：直接复制表结构数据到hive中"><a href="#方式二：直接复制表结构数据到hive中" class="headerlink" title="方式二：直接复制表结构数据到hive中"></a>方式二：直接复制表结构数据到hive中</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--table emp_conn \</span></span><br><span class="line"><span class="comment">--hive-import \</span></span><br><span class="line"><span class="comment">--m 1 \</span></span><br><span class="line"><span class="comment">--hive-database test;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="1.png"></p>
+<h2 id="导入表数据子集-where过滤"><a href="#导入表数据子集-where过滤" class="headerlink" title="导入表数据子集(where过滤)"></a>导入表数据子集(where过滤)</h2><p>–where 可以指定从关系数据库导入数据时的查询条件。它执行在数据库服务器相应的SQL查询，并将结果存储在HDFS的目标目录。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--where &quot;city =&#x27;sec-bad&#x27;&quot; \</span></span><br><span class="line"><span class="comment">--target-dir /wherequery \</span></span><br><span class="line"><span class="comment">--table emp_add --m 1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="2.png"></p>
 ]]></content>
       <categories>
         <category>sqoop</category>
@@ -240,5 +296,25 @@
         <tag>hexo</tag>
         <tag>next</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2016/09/18/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<a id="more"></a>
+
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
   </entry>
 </search>

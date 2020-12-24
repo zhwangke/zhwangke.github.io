@@ -309,7 +309,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2016/09/18/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -328,7 +328,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/09/18/hello-world/" itemprop="url">Hello World</a></h1>
+                <a class="post-title-link" href="/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/" itemprop="url">hadoop生态一键启停脚本</a></h1>
         
 
         <div class="post-meta">
@@ -347,8 +347,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-18T00:00:00+08:00">
-                2016-09-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-22T21:15:57+08:00">
+                2020-11-22
               </time>
             
 
@@ -358,6 +358,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">hadoop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -366,8 +388,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2016/09/18/hello-world/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2016/09/18/hello-world/" itemprop="commentCount"></span>
+                <a href="/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -396,146 +418,16 @@
 
       
         
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+          <h2 id="kafka集群一键启停脚本"><a href="#kafka集群一键启停脚本" class="headerlink" title="kafka集群一键启停脚本"></a>kafka集群一键启停脚本</h2><h3 id="slave"><a href="#slave" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure>
+
+<h3 id="startkafka-sh"><a href="#startkafka-sh" class="headerlink" title="startkafka.sh"></a>startkafka.sh</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/09/18/hello-world/#more" rel="contents">
+            <a class="btn" href="/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/22/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/22/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/" itemprop="url">(3)Apache Sqoop hive数据导出mysql</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-		
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-22T18:01:02+08:00">
-                2020-12-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/12/22/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/12/22/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
         
       
     </div>
@@ -1028,7 +920,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/08/30/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1047,7 +939,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/30/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/" itemprop="url">(2)Apache Sqoop mysql数据导入hive表和hdfs</a></h1>
+                <a class="post-title-link" href="/2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/" itemprop="url">(3)Apache Sqoop hive数据导出mysql</a></h1>
         
 
         <div class="post-meta">
@@ -1062,8 +954,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-30T18:00:09+08:00">
-                2019-08-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T18:01:02+08:00">
+                2019-08-28
               </time>
             
 
@@ -1103,8 +995,162 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/08/30/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/30/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/" itemprop="commentCount"></span>
+                <a href="/2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/" itemprop="url">(2)Apache Sqoop mysql数据导入hive表和hdfs</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+		
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T18:00:09+08:00">
+                2019-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/sqoop/" itemprop="url" rel="index">
+                    <span itemprop="name">sqoop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1138,7 +1184,7 @@
 <p>创建三张表: <strong>emp</strong>雇员表、 <strong>emp_add</strong>雇员地址表、<strong>emp_conn</strong>雇员联系表</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/08/30/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/#more" rel="contents">
+            <a class="btn" href="/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1478,6 +1524,143 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/09/18/hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/09/18/hello-world/" itemprop="url">Hello World</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+		
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-18T00:00:00+08:00">
+                2016-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/09/18/hello-world/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2016/09/18/hello-world/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/09/18/hello-world/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1532,7 +1715,7 @@
 				 <a href="/archives/index.html">
 
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1543,7 +1726,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1554,7 +1737,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
