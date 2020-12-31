@@ -101,7 +101,7 @@
 <meta property="og:description" content="关系运算：等值比较: &#x3D;语法：A&#x3D;B 操作类型：所有基本类型 描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为  NULL,均返回 FALSE;  举例： hive&gt; select 1 from tablename where 1&#x3D;1; 1 hive&gt; select 1 from tablename where NULL &#x3D; NULL;">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-12-31T11:17:37.000Z">
-<meta property="article:modified_time" content="2020-12-31T11:51:55.415Z">
+<meta property="article:modified_time" content="2020-12-31T11:55:17.653Z">
 <meta property="article:author" content="kyle Wang">
 <meta property="article:tag" content="hive">
 <meta name="twitter:card" content="summary">
@@ -500,6 +500,75 @@
 <p>操作类型: strings</p>
 <p>描述: 功能与 RLIKE 相同举例：</p>
 <p>hive&gt; select 1 from tablename where &#39;footbar&#39; REGEXP &#39;^f.*r$&#39;; 1</p>
+<h1 id="二、数学运算："><a href="#二、数学运算：" class="headerlink" title="二、数学运算："></a>二、数学运算：</h1><h2 id="加法操作"><a href="#加法操作" class="headerlink" title="加法操作: +"></a>加法操作: +</h2><p>语法: A + B</p>
+<p>操作类型：所有数值类型</p>
+<blockquote>
+<p>说明：返回 A 与 B 相加的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。比如，int + int 一般结果为 int 类型，而 int + double 一般结果为 double 类型</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 + 9 from tablename; 10</p>
+<p>hive&gt; create table tablename as select 1 + 1.2 from tablename; hive&gt; describe tablename;</p>
+<p>_c0 double</p>
+<h2 id="减法操作"><a href="#减法操作" class="headerlink" title="减法操作: -"></a>减法操作: -</h2><p>语法: A – B</p>
+<p>操作类型：所有数值类型</p>
+<blockquote>
+<p>说明：返回 A 与 B 相减的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。比如，int – int 一般结果为 int 类型，而 int – double 一般结果为 double 类型</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 10 – 5 from tablename; 5</p>
+<p>hive&gt; create table tablename as select 5.6 – 4 from tablename; hive&gt; describe tablename;</p>
+<p>_c0 double</p>
+<h2 id="乘法操作"><a href="#乘法操作" class="headerlink" title="乘法操作: *"></a>乘法操作: *</h2><p>语法: A * B</p>
+<p>操作类型：所有数值类型</p>
+<blockquote>
+<p>说明：返回 A 与 B 相乘的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。注意，如果 A 乘以 B 的结果超过默认结果类型的数值范围， 则需要通过 cast 将结果转换成范围更大的数值类型</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 40 * 5 from tablename;</p>
+<p>200</p>
+<h2 id="除法操作"><a href="#除法操作" class="headerlink" title="除法操作: /"></a>除法操作: /</h2><p>语法: A / B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 除以 B 的结果。结果的数值类型为 double</p>
+<p>举例：</p>
+<p>hive&gt; select 40 / 5 from tablename; 8.0</p>
+<p>注意：hive 中最高精度的数据类型是 double,只精确到小数点后 16 位，在做除法运算的时候要特别注意</p>
+<p>hive&gt;select ceil(28.0/6.999999999999999999999) from tablename limit 1;</p>
+<p>结果为 4</p>
+<p>hive&gt;select ceil(28.0/6.99999999999999) from tablename limit 1;</p>
+<p>结果为 5</p>
+<h2 id="取余操作"><a href="#取余操作" class="headerlink" title="取余操作: %"></a>取余操作: %</h2><p>语法: A % B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 除以 B 的余数。结果的数值类型等于 A 的类型和 B 的类型的最小父类型</p>
+<p>（详见数据类型的继承关系）。举例：</p>
+<p>hive&gt; select 41 % 5 from tablename; 1</p>
+<p>hive&gt; select 8.4 % 4 from tablename; 0.40000000000000036</p>
+<p>注意：精度在 hive 中是个很大的问题，类似这样的操作最好通过 round 指定精度</p>
+<p>hive&gt; select round(8.4 % 4 , 2) from tablename; 0.4</p>
+<h2 id="位与操作-amp"><a href="#位与操作-amp" class="headerlink" title="位与操作: &amp;"></a>位与操作: &amp;</h2><p>语法: A &amp; B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 和 B 按位进行与操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
+<p>举例：</p>
+<p>hive&gt; select 4 &amp; 8 from tablename; 0</p>
+<p>hive&gt; select 6 &amp; 4 from tablename; 4</p>
+<h2 id="位或操作"><a href="#位或操作" class="headerlink" title="位或操作: |"></a>位或操作: |</h2><p>语法: A | B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 和 B 按位进行或操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
+<p>举例：</p>
+<p>hive&gt; select 4 | 8 from tablename; 12</p>
+<p>hive&gt; select 6 | 8 from tablename; 14</p>
+<h2 id="位异或操作"><a href="#位异或操作" class="headerlink" title="位异或操作: ^"></a>位异或操作: ^</h2><p>语法: A ^ B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 和 B 按位进行异或操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
+<p>举例：</p>
+<p>hive&gt; select 4 ^ 8 from tablename; 12</p>
+<p>hive&gt; select 6 ^ 4 from tablename; 2</p>
+<h2 id="9．位取反操作"><a href="#9．位取反操作" class="headerlink" title="9．位取反操作: ~"></a>9．位取反操作: ~</h2><p>语法: ~A</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 按位取反操作的结果。结果的数值类型等于 A 的类型。举例：</p>
+<p>hive&gt; select ~6 from tablename;</p>
+<p>-7</p>
+<p>hive&gt; select ~4 from tablename;</p>
+<p>-5</p>
 
       
     </div>
@@ -748,7 +817,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E8%BF%90%E7%AE%97%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">关系运算：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83"><span class="nav-number">1.1.</span> <span class="nav-text">等值比较: &#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83-lt-gt"><span class="nav-number">1.2.</span> <span class="nav-text">等值比较:&lt;&#x3D;&gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83-lt-gt-%E5%92%8C"><span class="nav-number">1.3.</span> <span class="nav-text">不等值比较: &lt;&gt;和!&#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E4%BA%8E%E6%AF%94%E8%BE%83-lt"><span class="nav-number">1.4.</span> <span class="nav-text">小于比较: &lt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E%E6%AF%94%E8%BE%83-lt"><span class="nav-number">1.5.</span> <span class="nav-text">小于等于比较: &lt;&#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E6%AF%94%E8%BE%83-gt"><span class="nav-number">1.6.</span> <span class="nav-text">大于比较: &gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E6%AF%94%E8%BE%83-gt"><span class="nav-number">1.7.</span> <span class="nav-text">大于等于比较: &gt;&#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E9%97%B4%E6%AF%94%E8%BE%83"><span class="nav-number">1.8.</span> <span class="nav-text">区间比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E5%80%BC%E5%88%A4%E6%96%AD-IS-NULL"><span class="nav-number">1.9.</span> <span class="nav-text">空值判断: IS NULL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E7%A9%BA%E5%88%A4%E6%96%AD-IS-NOT-NULL"><span class="nav-number">1.10.</span> <span class="nav-text">非空判断: IS NOT NULL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LIKE-%E6%AF%94%E8%BE%83-LIKE"><span class="nav-number">1.11.</span> <span class="nav-text">LIKE 比较: LIKE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA-%E7%9A%84-LIKE-%E6%93%8D%E4%BD%9C-RLIKE"><span class="nav-number">1.12.</span> <span class="nav-text">JAVA 的 LIKE 操作: RLIKE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#REGEXP-%E6%93%8D%E4%BD%9C-REGEXP"><span class="nav-number">1.13.</span> <span class="nav-text">REGEXP 操作: REGEXP</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E8%BF%90%E7%AE%97%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">关系运算：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83"><span class="nav-number">1.1.</span> <span class="nav-text">等值比较: &#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83-lt-gt"><span class="nav-number">1.2.</span> <span class="nav-text">等值比较:&lt;&#x3D;&gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83-lt-gt-%E5%92%8C"><span class="nav-number">1.3.</span> <span class="nav-text">不等值比较: &lt;&gt;和!&#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E4%BA%8E%E6%AF%94%E8%BE%83-lt"><span class="nav-number">1.4.</span> <span class="nav-text">小于比较: &lt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E%E6%AF%94%E8%BE%83-lt"><span class="nav-number">1.5.</span> <span class="nav-text">小于等于比较: &lt;&#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E6%AF%94%E8%BE%83-gt"><span class="nav-number">1.6.</span> <span class="nav-text">大于比较: &gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E6%AF%94%E8%BE%83-gt"><span class="nav-number">1.7.</span> <span class="nav-text">大于等于比较: &gt;&#x3D;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E9%97%B4%E6%AF%94%E8%BE%83"><span class="nav-number">1.8.</span> <span class="nav-text">区间比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E5%80%BC%E5%88%A4%E6%96%AD-IS-NULL"><span class="nav-number">1.9.</span> <span class="nav-text">空值判断: IS NULL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E7%A9%BA%E5%88%A4%E6%96%AD-IS-NOT-NULL"><span class="nav-number">1.10.</span> <span class="nav-text">非空判断: IS NOT NULL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LIKE-%E6%AF%94%E8%BE%83-LIKE"><span class="nav-number">1.11.</span> <span class="nav-text">LIKE 比较: LIKE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA-%E7%9A%84-LIKE-%E6%93%8D%E4%BD%9C-RLIKE"><span class="nav-number">1.12.</span> <span class="nav-text">JAVA 的 LIKE 操作: RLIKE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#REGEXP-%E6%93%8D%E4%BD%9C-REGEXP"><span class="nav-number">1.13.</span> <span class="nav-text">REGEXP 操作: REGEXP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">二、数学运算：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E6%B3%95%E6%93%8D%E4%BD%9C"><span class="nav-number">2.1.</span> <span class="nav-text">加法操作: +</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%8F%E6%B3%95%E6%93%8D%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">减法操作: -</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%98%E6%B3%95%E6%93%8D%E4%BD%9C"><span class="nav-number">2.3.</span> <span class="nav-text">乘法操作: *</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%A4%E6%B3%95%E6%93%8D%E4%BD%9C"><span class="nav-number">2.4.</span> <span class="nav-text">除法操作: &#x2F;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%96%E4%BD%99%E6%93%8D%E4%BD%9C"><span class="nav-number">2.5.</span> <span class="nav-text">取余操作: %</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E4%B8%8E%E6%93%8D%E4%BD%9C-amp"><span class="nav-number">2.6.</span> <span class="nav-text">位与操作: &amp;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E6%88%96%E6%93%8D%E4%BD%9C"><span class="nav-number">2.7.</span> <span class="nav-text">位或操作: |</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E5%BC%82%E6%88%96%E6%93%8D%E4%BD%9C"><span class="nav-number">2.8.</span> <span class="nav-text">位异或操作: ^</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9%EF%BC%8E%E4%BD%8D%E5%8F%96%E5%8F%8D%E6%93%8D%E4%BD%9C"><span class="nav-number">2.9.</span> <span class="nav-text">9．位取反操作: ~</span></a></li></ol></li></ol></div>
             
 
           </div>

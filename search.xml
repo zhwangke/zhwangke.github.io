@@ -108,6 +108,75 @@
 <p>操作类型: strings</p>
 <p>描述: 功能与 RLIKE 相同举例：</p>
 <p>hive&gt; select 1 from tablename where &#39;footbar&#39; REGEXP &#39;^f.*r$&#39;; 1</p>
+<h1 id="二、数学运算："><a href="#二、数学运算：" class="headerlink" title="二、数学运算："></a>二、数学运算：</h1><h2 id="加法操作"><a href="#加法操作" class="headerlink" title="加法操作: +"></a>加法操作: +</h2><p>语法: A + B</p>
+<p>操作类型：所有数值类型</p>
+<blockquote>
+<p>说明：返回 A 与 B 相加的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。比如，int + int 一般结果为 int 类型，而 int + double 一般结果为 double 类型</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 + 9 from tablename; 10</p>
+<p>hive&gt; create table tablename as select 1 + 1.2 from tablename; hive&gt; describe tablename;</p>
+<p>_c0 double</p>
+<h2 id="减法操作"><a href="#减法操作" class="headerlink" title="减法操作: -"></a>减法操作: -</h2><p>语法: A – B</p>
+<p>操作类型：所有数值类型</p>
+<blockquote>
+<p>说明：返回 A 与 B 相减的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。比如，int – int 一般结果为 int 类型，而 int – double 一般结果为 double 类型</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 10 – 5 from tablename; 5</p>
+<p>hive&gt; create table tablename as select 5.6 – 4 from tablename; hive&gt; describe tablename;</p>
+<p>_c0 double</p>
+<h2 id="乘法操作"><a href="#乘法操作" class="headerlink" title="乘法操作: *"></a>乘法操作: *</h2><p>语法: A * B</p>
+<p>操作类型：所有数值类型</p>
+<blockquote>
+<p>说明：返回 A 与 B 相乘的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。注意，如果 A 乘以 B 的结果超过默认结果类型的数值范围， 则需要通过 cast 将结果转换成范围更大的数值类型</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 40 * 5 from tablename;</p>
+<p>200</p>
+<h2 id="除法操作"><a href="#除法操作" class="headerlink" title="除法操作: /"></a>除法操作: /</h2><p>语法: A / B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 除以 B 的结果。结果的数值类型为 double</p>
+<p>举例：</p>
+<p>hive&gt; select 40 / 5 from tablename; 8.0</p>
+<p>注意：hive 中最高精度的数据类型是 double,只精确到小数点后 16 位，在做除法运算的时候要特别注意</p>
+<p>hive&gt;select ceil(28.0/6.999999999999999999999) from tablename limit 1;</p>
+<p>结果为 4</p>
+<p>hive&gt;select ceil(28.0/6.99999999999999) from tablename limit 1;</p>
+<p>结果为 5</p>
+<h2 id="取余操作"><a href="#取余操作" class="headerlink" title="取余操作: %"></a>取余操作: %</h2><p>语法: A % B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 除以 B 的余数。结果的数值类型等于 A 的类型和 B 的类型的最小父类型</p>
+<p>（详见数据类型的继承关系）。举例：</p>
+<p>hive&gt; select 41 % 5 from tablename; 1</p>
+<p>hive&gt; select 8.4 % 4 from tablename; 0.40000000000000036</p>
+<p>注意：精度在 hive 中是个很大的问题，类似这样的操作最好通过 round 指定精度</p>
+<p>hive&gt; select round(8.4 % 4 , 2) from tablename; 0.4</p>
+<h2 id="位与操作-amp"><a href="#位与操作-amp" class="headerlink" title="位与操作: &amp;"></a>位与操作: &amp;</h2><p>语法: A &amp; B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 和 B 按位进行与操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
+<p>举例：</p>
+<p>hive&gt; select 4 &amp; 8 from tablename; 0</p>
+<p>hive&gt; select 6 &amp; 4 from tablename; 4</p>
+<h2 id="位或操作"><a href="#位或操作" class="headerlink" title="位或操作: |"></a>位或操作: |</h2><p>语法: A | B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 和 B 按位进行或操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
+<p>举例：</p>
+<p>hive&gt; select 4 | 8 from tablename; 12</p>
+<p>hive&gt; select 6 | 8 from tablename; 14</p>
+<h2 id="位异或操作"><a href="#位异或操作" class="headerlink" title="位异或操作: ^"></a>位异或操作: ^</h2><p>语法: A ^ B</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 和 B 按位进行异或操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
+<p>举例：</p>
+<p>hive&gt; select 4 ^ 8 from tablename; 12</p>
+<p>hive&gt; select 6 ^ 4 from tablename; 2</p>
+<h2 id="9．位取反操作"><a href="#9．位取反操作" class="headerlink" title="9．位取反操作: ~"></a>9．位取反操作: ~</h2><p>语法: ~A</p>
+<p>操作类型：所有数值类型</p>
+<p>说明：返回 A 按位取反操作的结果。结果的数值类型等于 A 的类型。举例：</p>
+<p>hive&gt; select ~6 from tablename;</p>
+<p>-7</p>
+<p>hive&gt; select ~4 from tablename;</p>
+<p>-5</p>
 ]]></content>
       <tags>
         <tag>hive</tag>
