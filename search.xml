@@ -3,7 +3,7 @@
   <entry>
     <title>hive查询支持的函数</title>
     <url>/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<h1 id="关系运算："><a href="#关系运算：" class="headerlink" title="关系运算："></a>关系运算：</h1><h2 id="等值比较"><a href="#等值比较" class="headerlink" title="等值比较: ="></a>等值比较: =</h2><p>语法：A=B</p>
+    <content><![CDATA[<h2 id="关系运算："><a href="#关系运算：" class="headerlink" title="关系运算："></a>关系运算：</h2><h3 id="等值比较"><a href="#等值比较" class="headerlink" title="等值比较: ="></a>等值比较: =</h3><p>语法：A=B</p>
 <p>操作类型：所有基本类型</p>
 <p>描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为</p>
 <blockquote>
@@ -14,13 +14,13 @@
 <p>hive&gt; select 1 from tablename where NULL = NULL; OK</p>
 <a id="more"></a>
 
-<h2 id="等值比较-lt-gt"><a href="#等值比较-lt-gt" class="headerlink" title="等值比较:&lt;=&gt;"></a>等值比较:&lt;=&gt;</h2><p>语法：A &lt;=&gt; B</p>
+<h3 id="等值比较-lt-gt"><a href="#等值比较-lt-gt" class="headerlink" title="等值比较:&lt;=&gt;"></a>等值比较:&lt;=&gt;</h3><p>语法：A &lt;=&gt; B</p>
 <p>操作类型：所有基本类型</p>
 <p>描述：如果 A 和 B 都是非 NULL 值，则返回结果和=一样，如果两者都为 NULL，返回 TRUE,</p>
 <p>如果有一个为 NULL，则返回 FALSE。举例：</p>
 <p>hive&gt; select 1 from tablename where NULL &lt;=&gt; NULL; OK</p>
 <p>1</p>
-<h2 id="不等值比较-lt-gt-和"><a href="#不等值比较-lt-gt-和" class="headerlink" title="不等值比较: &lt;&gt;和!="></a>不等值比较: &lt;&gt;和!=</h2><p>语法: A &lt;&gt; B A != B</p>
+<h3 id="不等值比较-lt-gt-和"><a href="#不等值比较-lt-gt-和" class="headerlink" title="不等值比较: &lt;&gt;和!="></a>不等值比较: &lt;&gt;和!=</h3><p>语法: A &lt;&gt; B A != B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 与表达式 B 不相等，则为 TRUE；否则为 FALSE</p>
@@ -30,7 +30,7 @@
 <blockquote>
 <p>1</p>
 </blockquote>
-<h2 id="小于比较-lt"><a href="#小于比较-lt" class="headerlink" title="小于比较: &lt;"></a>小于比较: &lt;</h2><p>语法: A &lt; B</p>
+<h3 id="小于比较-lt"><a href="#小于比较-lt" class="headerlink" title="小于比较: &lt;"></a>小于比较: &lt;</h3><p>语法: A &lt; B</p>
 <p>操作类型: 所有基本类型</p>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于</p>
 <blockquote>
@@ -39,7 +39,7 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 &lt; 2;</p>
 <p>1</p>
-<h2 id="小于等于比较-lt"><a href="#小于等于比较-lt" class="headerlink" title="小于等于比较: &lt;="></a>小于等于比较: &lt;=</h2><p>语法: A &lt;= B</p>
+<h3 id="小于等于比较-lt"><a href="#小于等于比较-lt" class="headerlink" title="小于等于比较: &lt;="></a>小于等于比较: &lt;=</h3><p>语法: A &lt;= B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
@@ -47,7 +47,7 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 &lt;= 1;</p>
 <p>1</p>
-<h2 id="大于比较-gt"><a href="#大于比较-gt" class="headerlink" title="大于比较: &gt;"></a>大于比较: &gt;</h2><p>语法: A &gt; B</p>
+<h3 id="大于比较-gt"><a href="#大于比较-gt" class="headerlink" title="大于比较: &gt;"></a>大于比较: &gt;</h3><p>语法: A &gt; B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于表达式 B，则为 TRUE；否则为 FALSE</p>
@@ -55,7 +55,7 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 2 &gt; 1;</p>
 <p>1</p>
-<h2 id="大于等于比较-gt"><a href="#大于等于比较-gt" class="headerlink" title="大于等于比较: &gt;="></a>大于等于比较: &gt;=</h2><p>语法: A &gt;= B</p>
+<h3 id="大于等于比较-gt"><a href="#大于等于比较-gt" class="headerlink" title="大于等于比较: &gt;="></a>大于等于比较: &gt;=</h3><p>语法: A &gt;= B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
@@ -68,23 +68,23 @@
 <p>2011111209 00:00:00 2011111209</p>
 <p>hive&gt; select a,b,a&lt;b,a&gt;b,a=b from tablename;</p>
 <p>2011111209 00:00:00 2011111209 false true false</p>
-<h2 id="区间比较"><a href="#区间比较" class="headerlink" title="区间比较"></a>区间比较</h2><p>语法: A [NOT] BETWEEN B AND C</p>
+<h3 id="区间比较"><a href="#区间比较" class="headerlink" title="区间比较"></a>区间比较</h3><p>语法: A [NOT] BETWEEN B AND C</p>
 <p>操作类型: 所有类型</p>
 <p>描述: 如果 A、B、C 有任一个为 NULL,则返回 FALSE. 等价于 B &lt;= A &lt; C.</p>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 between 1 and 2; OK</p>
 <p>1</p>
-<h2 id="空值判断-IS-NULL"><a href="#空值判断-IS-NULL" class="headerlink" title="空值判断: IS NULL"></a>空值判断: IS NULL</h2><p>语法: A IS NULL</p>
+<h3 id="空值判断-IS-NULL"><a href="#空值判断-IS-NULL" class="headerlink" title="空值判断: IS NULL"></a>空值判断: IS NULL</h3><p>语法: A IS NULL</p>
 <p>操作类型: 所有类型</p>
 <p>描述: 如果表达式 A 的值为 NULL，则为 TRUE；否则为 FALSE</p>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where null is null; 1</p>
-<h2 id="非空判断-IS-NOT-NULL"><a href="#非空判断-IS-NOT-NULL" class="headerlink" title="非空判断: IS NOT NULL"></a>非空判断: IS NOT NULL</h2><p>语法: A IS NOT NULL</p>
+<h3 id="非空判断-IS-NOT-NULL"><a href="#非空判断-IS-NOT-NULL" class="headerlink" title="非空判断: IS NOT NULL"></a>非空判断: IS NOT NULL</h3><p>语法: A IS NOT NULL</p>
 <p>操作类型: 所有类型</p>
 <p>描述: 如果表达式 A 的值为 NULL，则为 FALSE；否则为 TRUE</p>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 is not null; 1</p>
-<h2 id="LIKE-比较-LIKE"><a href="#LIKE-比较-LIKE" class="headerlink" title="LIKE 比较: LIKE"></a>LIKE 比较: LIKE</h2><p>语法: A LIKE B</p>
+<h3 id="LIKE-比较-LIKE"><a href="#LIKE-比较-LIKE" class="headerlink" title="LIKE 比较: LIKE"></a>LIKE 比较: LIKE</h3><p>语法: A LIKE B</p>
 <p>操作类型: strings</p>
 <blockquote>
 <p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合表达式 B 的正则语法，则为 TRUE；否则为 FALSE。B 中字符”_“表示任意单个字符，而字符”%”表示任意数量的字符。</p>
@@ -94,7 +94,7 @@
 <p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot [ ]&#39;; 1</p>
 <p>注意：否定比较时候用 NOT A LIKE B</p>
 <p>hive&gt; select 1 from tablename where NOT &#39;football&#39; like &#39;fff%&#39;; 1</p>
-<h2 id="JAVA-的-LIKE-操作-RLIKE"><a href="#JAVA-的-LIKE-操作-RLIKE" class="headerlink" title="JAVA 的 LIKE 操作: RLIKE"></a>JAVA 的 LIKE 操作: RLIKE</h2><p>语法: A RLIKE B</p>
+<h3 id="JAVA-的-LIKE-操作-RLIKE"><a href="#JAVA-的-LIKE-操作-RLIKE" class="headerlink" title="JAVA 的 LIKE 操作: RLIKE"></a>JAVA 的 LIKE 操作: RLIKE</h3><p>语法: A RLIKE B</p>
 <p>操作类型: strings</p>
 <blockquote>
 <p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合 JAVA 正则表达式 B 的正则语法，则为 TRUE；否则为 FALSE。</p>
@@ -104,11 +104,11 @@
 <p>注意：判断一个字符串是否全为数字：</p>
 <p>hive&gt;select 1 from tablename where &#39;123456&#39; rlike &#39;^\\d+$&#39;; 1</p>
 <p>hive&gt; select 1 from tablename where &#39;123456aa&#39; rlike &#39;^\\d+$&#39;;</p>
-<h2 id="REGEXP-操作-REGEXP"><a href="#REGEXP-操作-REGEXP" class="headerlink" title="REGEXP 操作: REGEXP"></a>REGEXP 操作: REGEXP</h2><p>语法: A REGEXP B</p>
+<h3 id="REGEXP-操作-REGEXP"><a href="#REGEXP-操作-REGEXP" class="headerlink" title="REGEXP 操作: REGEXP"></a>REGEXP 操作: REGEXP</h3><p>语法: A REGEXP B</p>
 <p>操作类型: strings</p>
 <p>描述: 功能与 RLIKE 相同举例：</p>
 <p>hive&gt; select 1 from tablename where &#39;footbar&#39; REGEXP &#39;^f.*r$&#39;; 1</p>
-<h1 id="二、数学运算："><a href="#二、数学运算：" class="headerlink" title="二、数学运算："></a>二、数学运算：</h1><h2 id="加法操作"><a href="#加法操作" class="headerlink" title="加法操作: +"></a>加法操作: +</h2><p>语法: A + B</p>
+<h2 id="数学运算："><a href="#数学运算：" class="headerlink" title="数学运算："></a>数学运算：</h2><h3 id="加法操作"><a href="#加法操作" class="headerlink" title="加法操作: +"></a>加法操作: +</h3><p>语法: A + B</p>
 <p>操作类型：所有数值类型</p>
 <blockquote>
 <p>说明：返回 A 与 B 相加的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。比如，int + int 一般结果为 int 类型，而 int + double 一般结果为 double 类型</p>
@@ -117,7 +117,7 @@
 <p>hive&gt; select 1 + 9 from tablename; 10</p>
 <p>hive&gt; create table tablename as select 1 + 1.2 from tablename; hive&gt; describe tablename;</p>
 <p>_c0 double</p>
-<h2 id="减法操作"><a href="#减法操作" class="headerlink" title="减法操作: -"></a>减法操作: -</h2><p>语法: A – B</p>
+<h3 id="减法操作"><a href="#减法操作" class="headerlink" title="减法操作: -"></a>减法操作: -</h3><p>语法: A – B</p>
 <p>操作类型：所有数值类型</p>
 <blockquote>
 <p>说明：返回 A 与 B 相减的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。比如，int – int 一般结果为 int 类型，而 int – double 一般结果为 double 类型</p>
@@ -126,7 +126,7 @@
 <p>hive&gt; select 10 – 5 from tablename; 5</p>
 <p>hive&gt; create table tablename as select 5.6 – 4 from tablename; hive&gt; describe tablename;</p>
 <p>_c0 double</p>
-<h2 id="乘法操作"><a href="#乘法操作" class="headerlink" title="乘法操作: *"></a>乘法操作: *</h2><p>语法: A * B</p>
+<h3 id="乘法操作"><a href="#乘法操作" class="headerlink" title="乘法操作: *"></a>乘法操作: *</h3><p>语法: A * B</p>
 <p>操作类型：所有数值类型</p>
 <blockquote>
 <p>说明：返回 A 与 B 相乘的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。注意，如果 A 乘以 B 的结果超过默认结果类型的数值范围， 则需要通过 cast 将结果转换成范围更大的数值类型</p>
@@ -134,7 +134,7 @@
 <p>举例：</p>
 <p>hive&gt; select 40 * 5 from tablename;</p>
 <p>200</p>
-<h2 id="除法操作"><a href="#除法操作" class="headerlink" title="除法操作: /"></a>除法操作: /</h2><p>语法: A / B</p>
+<h3 id="除法操作"><a href="#除法操作" class="headerlink" title="除法操作: /"></a>除法操作: /</h3><p>语法: A / B</p>
 <p>操作类型：所有数值类型</p>
 <p>说明：返回 A 除以 B 的结果。结果的数值类型为 double</p>
 <p>举例：</p>
@@ -144,7 +144,7 @@
 <p>结果为 4</p>
 <p>hive&gt;select ceil(28.0/6.99999999999999) from tablename limit 1;</p>
 <p>结果为 5</p>
-<h2 id="取余操作"><a href="#取余操作" class="headerlink" title="取余操作: %"></a>取余操作: %</h2><p>语法: A % B</p>
+<h3 id="取余操作"><a href="#取余操作" class="headerlink" title="取余操作: %"></a>取余操作: %</h3><p>语法: A % B</p>
 <p>操作类型：所有数值类型</p>
 <p>说明：返回 A 除以 B 的余数。结果的数值类型等于 A 的类型和 B 的类型的最小父类型</p>
 <p>（详见数据类型的继承关系）。举例：</p>
@@ -152,25 +152,25 @@
 <p>hive&gt; select 8.4 % 4 from tablename; 0.40000000000000036</p>
 <p>注意：精度在 hive 中是个很大的问题，类似这样的操作最好通过 round 指定精度</p>
 <p>hive&gt; select round(8.4 % 4 , 2) from tablename; 0.4</p>
-<h2 id="位与操作-amp"><a href="#位与操作-amp" class="headerlink" title="位与操作: &amp;"></a>位与操作: &amp;</h2><p>语法: A &amp; B</p>
+<h3 id="位与操作-amp"><a href="#位与操作-amp" class="headerlink" title="位与操作: &amp;"></a>位与操作: &amp;</h3><p>语法: A &amp; B</p>
 <p>操作类型：所有数值类型</p>
 <p>说明：返回 A 和 B 按位进行与操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
 <p>举例：</p>
 <p>hive&gt; select 4 &amp; 8 from tablename; 0</p>
 <p>hive&gt; select 6 &amp; 4 from tablename; 4</p>
-<h2 id="位或操作"><a href="#位或操作" class="headerlink" title="位或操作: |"></a>位或操作: |</h2><p>语法: A | B</p>
+<h3 id="位或操作"><a href="#位或操作" class="headerlink" title="位或操作: |"></a>位或操作: |</h3><p>语法: A | B</p>
 <p>操作类型：所有数值类型</p>
 <p>说明：返回 A 和 B 按位进行或操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
 <p>举例：</p>
 <p>hive&gt; select 4 | 8 from tablename; 12</p>
 <p>hive&gt; select 6 | 8 from tablename; 14</p>
-<h2 id="位异或操作"><a href="#位异或操作" class="headerlink" title="位异或操作: ^"></a>位异或操作: ^</h2><p>语法: A ^ B</p>
+<h3 id="位异或操作"><a href="#位异或操作" class="headerlink" title="位异或操作: ^"></a>位异或操作: ^</h3><p>语法: A ^ B</p>
 <p>操作类型：所有数值类型</p>
 <p>说明：返回 A 和 B 按位进行异或操作的结果。结果的数值类型等于 A 的类型和 B 的类型的最小父类型（详见数据类型的继承关系）。</p>
 <p>举例：</p>
 <p>hive&gt; select 4 ^ 8 from tablename; 12</p>
 <p>hive&gt; select 6 ^ 4 from tablename; 2</p>
-<h2 id="9．位取反操作"><a href="#9．位取反操作" class="headerlink" title="9．位取反操作: ~"></a>9．位取反操作: ~</h2><p>语法: ~A</p>
+<h3 id="位取反操作"><a href="#位取反操作" class="headerlink" title="位取反操作: ~"></a>位取反操作: ~</h3><p>语法: ~A</p>
 <p>操作类型：所有数值类型</p>
 <p>说明：返回 A 按位取反操作的结果。结果的数值类型等于 A 的类型。举例：</p>
 <p>hive&gt; select ~6 from tablename;</p>
