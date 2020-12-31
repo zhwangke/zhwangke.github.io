@@ -82,7 +82,7 @@
 
 
 
-  <meta name="keywords" content="flink," />
+  <meta name="keywords" content="hive," />
 
 
 
@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="在_config.yml文件，找到deploy，进行以下配置： 1234deploy:  type: git  repo: https:&#x2F;&#x2F;github.com&#x2F;username&#x2F;username.github.io.git  branch: master">
+<meta name="description" content="一、关系运算：等值比较: &#x3D;语法：A&#x3D;B 操作类型：所有基本类型 描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为  NULL,均返回 FALSE;  举例： hive&gt; select 1 from tablename where 1&#x3D;1; 1 hive&gt; select 1 from tablename where NULL &#x3D; N">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flink">
-<meta property="og:url" content="http://example.com/2020/12/17/flink/index.html">
+<meta property="og:title" content="hive查询支持的函数">
+<meta property="og:url" content="http://example.com/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/index.html">
 <meta property="og:site_name" content="Notes">
-<meta property="og:description" content="在_config.yml文件，找到deploy，进行以下配置： 1234deploy:  type: git  repo: https:&#x2F;&#x2F;github.com&#x2F;username&#x2F;username.github.io.git  branch: master">
+<meta property="og:description" content="一、关系运算：等值比较: &#x3D;语法：A&#x3D;B 操作类型：所有基本类型 描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为  NULL,均返回 FALSE;  举例： hive&gt; select 1 from tablename where 1&#x3D;1; 1 hive&gt; select 1 from tablename where NULL &#x3D; N">
 <meta property="og:locale">
-<meta property="article:published_time" content="2020-12-17T08:17:04.000Z">
-<meta property="article:modified_time" content="2020-12-22T12:35:38.576Z">
+<meta property="article:published_time" content="2020-12-31T11:17:37.000Z">
+<meta property="article:modified_time" content="2020-12-31T11:44:06.889Z">
 <meta property="article:author" content="kyle Wang">
-<meta property="article:tag" content="flink">
+<meta property="article:tag" content="hive">
 <meta name="twitter:card" content="summary">
 
 
@@ -134,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/2020/12/17/flink/"/>
+  <link rel="canonical" href="http://example.com/2020/12/31/hive查询支持的函数/"/>
 
 
 
 
 
-  <title>flink | Notes</title>
+  <title>hive查询支持的函数 | Notes</title>
   
 
 
@@ -311,7 +311,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/17/flink/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -328,12 +328,16 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">flink</h1>
+          <h1 class="post-title" itemprop="name headline">hive查询支持的函数</h1>
         
 
         <div class="post-meta">
           <span class="post-time">
 
+		
+		<i class="fa fa-thumb-tack"></i>
+		<b><font color=F45558>置顶</font></b>
+		<span class="post-meta-divider">|</span>
 		
 
             
@@ -343,8 +347,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-17T16:17:04+08:00">
-                2020-12-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-31T19:17:37+08:00">
+                2020-12-31
               </time>
             
 
@@ -354,28 +358,6 @@
           </span>
 
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/test/" itemprop="url" rel="index">
-                    <span itemprop="name">test</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
 
           
             
@@ -384,8 +366,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2020/12/17/flink/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/12/17/flink/" itemprop="commentCount"></span>
+                <a href="/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/" itemprop="commentCount"></span>
                 </a>条评论
               </span>
             
@@ -413,8 +395,109 @@
       
 
       
-        <p>在<code>_config.yml</code>文件，找到<code>deploy</code>，进行以下配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https:&#x2F;&#x2F;github.com&#x2F;username&#x2F;username.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+        <a id="more"></a>
+
+<h1 id="一、关系运算："><a href="#一、关系运算：" class="headerlink" title="一、关系运算："></a>一、关系运算：</h1><h1 id="等值比较"><a href="#等值比较" class="headerlink" title="等值比较: ="></a>等值比较: =</h1><p>语法：A=B</p>
+<p>操作类型：所有基本类型</p>
+<p>描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为</p>
+<blockquote>
+<p>NULL,均返回 FALSE;</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1=1; 1</p>
+<p>hive&gt; select 1 from tablename where NULL = NULL; OK</p>
+<h1 id="等值比较-lt-gt"><a href="#等值比较-lt-gt" class="headerlink" title="等值比较:&lt;=&gt;"></a>等值比较:&lt;=&gt;</h1><p>语法：A &lt;=&gt; B</p>
+<p>操作类型：所有基本类型</p>
+<p>描述：如果 A 和 B 都是非 NULL 值，则返回结果和=一样，如果两者都为 NULL，返回 TRUE,</p>
+<p>如果有一个为 NULL，则返回 FALSE。举例：</p>
+<p>hive&gt; select 1 from tablename where NULL &lt;=&gt; NULL; OK</p>
+<p>1</p>
+<h1 id="不等值比较-lt-gt-和"><a href="#不等值比较-lt-gt-和" class="headerlink" title="不等值比较: &lt;&gt;和!="></a>不等值比较: &lt;&gt;和!=</h1><p>语法: A &lt;&gt; B A != B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 与表达式 B 不相等，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &lt;&gt; 2;</p>
+<blockquote>
+<p>1</p>
+</blockquote>
+<h1 id="小于比较-lt"><a href="#小于比较-lt" class="headerlink" title="小于比较: &lt;"></a>小于比较: &lt;</h1><p>语法: A &lt; B</p>
+<p>操作类型: 所有基本类型</p>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于</p>
+<blockquote>
+<p>表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &lt; 2;</p>
+<p>1</p>
+<h1 id="小于等于比较-lt"><a href="#小于等于比较-lt" class="headerlink" title="小于等于比较: &lt;="></a>小于等于比较: &lt;=</h1><p>语法: A &lt;= B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &lt;= 1;</p>
+<p>1</p>
+<h1 id="大于比较-gt"><a href="#大于比较-gt" class="headerlink" title="大于比较: &gt;"></a>大于比较: &gt;</h1><p>语法: A &gt; B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 2 &gt; 1;</p>
+<p>1</p>
+<h1 id="大于等于比较-gt"><a href="#大于等于比较-gt" class="headerlink" title="大于等于比较: &gt;="></a>大于等于比较: &gt;=</h1><p>语法: A &gt;= B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &gt;= 1;</p>
+<p>1</p>
+<h2 id="注意：String-的比较要注意-常用的时间比较可以先-to-date-之后再比较"><a href="#注意：String-的比较要注意-常用的时间比较可以先-to-date-之后再比较" class="headerlink" title="注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)"></a>注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)</h2><p>hive&gt; select * from tablename; OK</p>
+<p>2011111209 00:00:00 2011111209</p>
+<p>hive&gt; select a,b,a&lt;b,a&gt;b,a=b from tablename;</p>
+<p>2011111209 00:00:00 2011111209 false true false</p>
+<h1 id="区间比较"><a href="#区间比较" class="headerlink" title="区间比较"></a>区间比较</h1><p>语法: A [NOT] BETWEEN B AND C</p>
+<p>操作类型: 所有类型</p>
+<p>描述: 如果 A、B、C 有任一个为 NULL,则返回 FALSE. 等价于 B &lt;= A &lt; C.</p>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 between 1 and 2; OK</p>
+<p>1</p>
+<h1 id="空值判断-IS-NULL"><a href="#空值判断-IS-NULL" class="headerlink" title="空值判断: IS NULL"></a>空值判断: IS NULL</h1><p>语法: A IS NULL</p>
+<p>操作类型: 所有类型</p>
+<p>描述: 如果表达式 A 的值为 NULL，则为 TRUE；否则为 FALSE</p>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where null is null; 1</p>
+<h1 id="非空判断-IS-NOT-NULL"><a href="#非空判断-IS-NOT-NULL" class="headerlink" title="非空判断: IS NOT NULL"></a>非空判断: IS NOT NULL</h1><p>语法: A IS NOT NULL</p>
+<p>操作类型: 所有类型</p>
+<p>描述: 如果表达式 A 的值为 NULL，则为 FALSE；否则为 TRUE</p>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 is not null; 1</p>
+<h1 id="LIKE-比较-LIKE"><a href="#LIKE-比较-LIKE" class="headerlink" title="LIKE 比较: LIKE"></a>LIKE 比较: LIKE</h1><p>语法: A LIKE B</p>
+<p>操作类型: strings</p>
+<blockquote>
+<p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合表达式 B 的正则语法，则为 TRUE；否则为 FALSE。B 中字符”_“表示任意单个字符，而字符”%”表示任意数量的字符。</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot%&#39;; 1</p>
+<p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot [ ]&#39;; 1</p>
+<h2 id="注意：否定比较时候用-NOT-A-LIKE-B"><a href="#注意：否定比较时候用-NOT-A-LIKE-B" class="headerlink" title="注意：否定比较时候用 NOT A LIKE B"></a>注意：否定比较时候用 NOT A LIKE B</h2><p>hive&gt; select 1 from tablename where NOT &#39;football&#39; like &#39;fff%&#39;; 1</p>
+<h1 id="JAVA-的-LIKE-操作-RLIKE"><a href="#JAVA-的-LIKE-操作-RLIKE" class="headerlink" title="JAVA 的 LIKE 操作: RLIKE"></a>JAVA 的 LIKE 操作: RLIKE</h1><p>语法: A RLIKE B</p>
+<p>操作类型: strings</p>
+<blockquote>
+<p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合 JAVA 正则表达式 B 的正则语法，则为 TRUE；否则为 FALSE。</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where &#39;footbar’ rlike &#39;^f.*r$‘; 1</p>
+<h2 id="注意：判断一个字符串是否全为数字："><a href="#注意：判断一个字符串是否全为数字：" class="headerlink" title="注意：判断一个字符串是否全为数字："></a>注意：判断一个字符串是否全为数字：</h2><p>hive&gt;select 1 from tablename where &#39;123456&#39; rlike &#39;^\\d+$&#39;; 1</p>
+<p>hive&gt; select 1 from tablename where &#39;123456aa&#39; rlike &#39;^\\d+$&#39;;</p>
+<h1 id="REGEXP-操作-REGEXP"><a href="#REGEXP-操作-REGEXP" class="headerlink" title="REGEXP 操作: REGEXP"></a>REGEXP 操作: REGEXP</h1><p>语法: A REGEXP B</p>
+<p>操作类型: strings</p>
+<p>描述: 功能与 RLIKE 相同举例：</p>
+<p>hive&gt; select 1 from tablename where &#39;footbar&#39; REGEXP &#39;^f.*r$&#39;; 1</p>
+
       
     </div>
     
@@ -464,7 +547,7 @@
   <!-- 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://example.com/2020/12/17/flink/" title="flink">http://example.com/2020/12/17/flink/</a>
+    <a href="http://example.com/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/" title="hive查询支持的函数">http://example.com/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/</a>
   </li>
    -->
   <li class="post-copyright-license">
@@ -480,7 +563,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/flink/" rel="tag"># flink</a>
+            <a href="/tags/hive/" rel="tag"># hive</a>
           
         </div>
       
@@ -493,8 +576,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/" rel="next" title="hadoop生态一键启停脚本">
-                <i class="fa fa-chevron-left"></i> hadoop生态一键启停脚本
+              <a href="/2020/12/17/flink/" rel="next" title="flink">
+                <i class="fa fa-chevron-left"></i> flink
               </a>
             
           </div>
@@ -502,10 +585,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/" rel="prev" title="hive查询支持的函数">
-                hive查询支持的函数 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -562,8 +641,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -647,6 +735,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%85%B3%E7%B3%BB%E8%BF%90%E7%AE%97%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">一、关系运算：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83"><span class="nav-number">2.</span> <span class="nav-text">等值比较: &#x3D;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83-lt-gt"><span class="nav-number">3.</span> <span class="nav-text">等值比较:&lt;&#x3D;&gt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8D%E7%AD%89%E5%80%BC%E6%AF%94%E8%BE%83-lt-gt-%E5%92%8C"><span class="nav-number">4.</span> <span class="nav-text">不等值比较: &lt;&gt;和!&#x3D;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E4%BA%8E%E6%AF%94%E8%BE%83-lt"><span class="nav-number">5.</span> <span class="nav-text">小于比较: &lt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E%E6%AF%94%E8%BE%83-lt"><span class="nav-number">6.</span> <span class="nav-text">小于等于比较: &lt;&#x3D;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E6%AF%94%E8%BE%83-gt"><span class="nav-number">7.</span> <span class="nav-text">大于比较: &gt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E6%AF%94%E8%BE%83-gt"><span class="nav-number">8.</span> <span class="nav-text">大于等于比较: &gt;&#x3D;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9AString-%E7%9A%84%E6%AF%94%E8%BE%83%E8%A6%81%E6%B3%A8%E6%84%8F-%E5%B8%B8%E7%94%A8%E7%9A%84%E6%97%B6%E9%97%B4%E6%AF%94%E8%BE%83%E5%8F%AF%E4%BB%A5%E5%85%88-to-date-%E4%B9%8B%E5%90%8E%E5%86%8D%E6%AF%94%E8%BE%83"><span class="nav-number">8.1.</span> <span class="nav-text">注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%BA%E9%97%B4%E6%AF%94%E8%BE%83"><span class="nav-number">9.</span> <span class="nav-text">区间比较</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%BA%E5%80%BC%E5%88%A4%E6%96%AD-IS-NULL"><span class="nav-number">10.</span> <span class="nav-text">空值判断: IS NULL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%9E%E7%A9%BA%E5%88%A4%E6%96%AD-IS-NOT-NULL"><span class="nav-number">11.</span> <span class="nav-text">非空判断: IS NOT NULL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LIKE-%E6%AF%94%E8%BE%83-LIKE"><span class="nav-number">12.</span> <span class="nav-text">LIKE 比较: LIKE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9A%E5%90%A6%E5%AE%9A%E6%AF%94%E8%BE%83%E6%97%B6%E5%80%99%E7%94%A8-NOT-A-LIKE-B"><span class="nav-number">12.1.</span> <span class="nav-text">注意：否定比较时候用 NOT A LIKE B</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA-%E7%9A%84-LIKE-%E6%93%8D%E4%BD%9C-RLIKE"><span class="nav-number">13.</span> <span class="nav-text">JAVA 的 LIKE 操作: RLIKE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9A%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%98%AF%E5%90%A6%E5%85%A8%E4%B8%BA%E6%95%B0%E5%AD%97%EF%BC%9A"><span class="nav-number">13.1.</span> <span class="nav-text">注意：判断一个字符串是否全为数字：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#REGEXP-%E6%93%8D%E4%BD%9C-REGEXP"><span class="nav-number">14.</span> <span class="nav-text">REGEXP 操作: REGEXP</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

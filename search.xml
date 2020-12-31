@@ -1,237 +1,459 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
-    <entry>
-      <title>flink</title>
-      <link href="2020/12/17/flink/"/>
-      <url>2020/12/17/flink/</url>
-      
-        <content type="html"><![CDATA[<p>在<code>_config.yml</code>文件，找到<code>deploy</code>，进行以下配置：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https:&#x2F;&#x2F;github.com&#x2F;username&#x2F;username.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>]]></content>
-      
-      
+<search>
+  <entry>
+    <title>(1)Apache Sqoop介绍及安装</title>
+    <url>/2019/08/28/1-Apache-Sqoop%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="sqoop介绍"><a href="#sqoop介绍" class="headerlink" title="sqoop介绍"></a>sqoop介绍</h2><p><font color=#008000> <strong>Apache Sqoop</strong> 是在Hadoop生态体系和RDBMS体系之间传送数据的一种工具。</font> </p>
+<p>Sqoop工作机制是将导入或导出命令翻译成mapreduce程序来实现。在翻译出的mapreduce中主要是对inputformat和outputformat进行定制。</p>
+<p>Hadoop生态系统包括：HDFS、Hive、Hbase等</p>
+<p>RDBMS体系包括：Mysql、Oracle、DB2等</p>
+<p>Sqoop可以理解为:”SQL 到 Hadoop 和 Hadoop 到SQL”。</p>
+<a id="more"></a>
+
+<p><img src="1.png"></p>
+<p>站在Apache立场看待数据流转问题，可以分为数据的导入导出:</p>
+<p>Import：数据导入。RDBMS—–&gt;Hadoop</p>
+<p>Export：数据导出。Hadoop—-&gt;RDBMS</p>
+<h2 id="sqoop安装"><a href="#sqoop安装" class="headerlink" title="sqoop安装"></a>sqoop安装</h2><p>安装sqoop的前提是已经具备java和hadoop的环境。</p>
+<p>配置文件修改：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd $SQOOP_HOME/conf</span><br><span class="line">mv sqoop-env-template.sh sqoop-env.sh</span><br><span class="line">vi sqoop-env.sh</span><br><span class="line">export HADOOP_COMMON_HOME= /export/servers/hadoop-2.7.5 </span><br><span class="line">export HADOOP_MAPRED_HOME= /export/servers/hadoop-2.7.5</span><br><span class="line">export HIVE_HOME= /export/servers/hive</span><br></pre></td></tr></table></figure>
+
+<p>加入mysql的jdbc驱动包</p>
+<p>cp /hive/lib/mysql-connector-java-5.1.32.jar $SQOOP_HOME/lib/</p>
+<p>验证启动</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bin/sqoop list-databases \</span><br><span class="line"> --connect jdbc:mysql://localhost:3306/ \</span><br><span class="line"> --username root --password 123456</span><br></pre></td></tr></table></figure>
+
+<p>本命令会列出所有mysql的数据库。</p>
+<p>到这里，整个Sqoop安装工作完成。</p>
+<p><img src="2.png" alt="1608640133661"></p>
+<ul>
+<li><p>注意事项：命令携带参数必须出现在一行中，若换行就意味着自动提交执行，可通过\表示未结束。</p>
+</li>
+<li><p>全量导入数据到hdfs</p>
+<ul>
+<li><p>mysql的地址尽量不要使用localhost  请使用ip或者host</p>
+</li>
+<li><p>如果不指定  导入到hdfs默认分隔符是  “,”</p>
+</li>
+<li><p>可以通过– fields-terminated-by ‘\ t‘ 指定具体的分隔符</p>
+</li>
+<li><p>如果表的数据比较大 可以并行启动多个maptask执行导入操作，如果表没有主键，请指定根据哪个字段进行切分</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line">--connect jdbc:mysql://node-1:3306/userdb \</span><br><span class="line">--username root \</span><br><span class="line">--password hadoop \</span><br><span class="line">--target-dir /sqoopresult214 \</span><br><span class="line">--fields-terminated-by &#x27;\t&#x27; \</span><br><span class="line">--split-by id \</span><br><span class="line">--table emp --m 2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>导入表数据子集（query查询）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">使用 query sql 语句来进行查找不能加参数--table ;</span><br><span class="line">并且必须要添加 where 条件;</span><br><span class="line">并且 where 条件后面必须带一个$CONDITIONS 这个字符串;</span><br><span class="line">并且这个 sql 语句必须用单引号，不能用双引号;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>增量数据的导入</p>
+<ul>
+<li>所谓的增量数据指的是上次至今中间新增加的数据</li>
+<li>sqoop支持两种模式的增量导入 <ul>
+<li>append追加 根据数值类型字段进行追加导入  大于指定的last-value</li>
+<li>lastmodified 根据时间戳类型字段进行追加  <strong>大于等于</strong>指定的last-value<ul>
+<li>注意在lastmodified 模式下 还分为两种情形：append  merge-key</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>关于lastmodified 中的两种模式：</p>
+<ul>
+<li><p>append 只会追加增量数据到一个新的文件中  并且会产生数据的重复问题</p>
+<p>因为默认是从指定的last-value 大于等于其值的数据开始导入</p>
+</li>
+<li><p>merge-key 把增量的数据合并到一个文件中  处理追加增量数据之外 如果之前的数据有变化修改</p>
+<p>也可以进行修改操作 底层相当于进行了一次完整的mr作业。数据不会重复。</p>
+</li>
+</ul>
+</li>
+</ul>
+]]></content>
       <categories>
-          
-          <category> test </category>
-          
+        <category>sqoop</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> flink </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>hadoop生态一键启停脚本</title>
-      <link href="2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/"/>
-      <url>2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/</url>
-      
-        <content type="html"><![CDATA[<h2 id="kafka集群一键启停脚本"><a href="#kafka集群一键启停脚本" class="headerlink" title="kafka集群一键启停脚本"></a>kafka集群一键启停脚本</h2><h3 id="slave"><a href="#slave" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure><h3 id="startkafka-sh"><a href="#startkafka-sh" class="headerlink" title="startkafka.sh"></a>startkafka.sh</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure><a id="more"></a><p>or</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">        ssh $host &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot; </span><br><span class="line">echo &quot;$host kafka is running&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure><h3 id="stopkafka-sh"><a href="#stopkafka-sh" class="headerlink" title="stopkafka.sh"></a>stopkafka.sh</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;jps |grep Kafka |cut -c 1-5 |xargs kill -s 9 &quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure><p>or</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">  ssh $host &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-stop.sh &gt;/dev/null 2&gt;&amp;1 &amp;&quot; </span><br><span class="line">  echo &quot;$host kafka is stopping&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure><h2 id="zookeeper集群一键启停脚本"><a href="#zookeeper集群一键启停脚本" class="headerlink" title="zookeeper集群一键启停脚本"></a>zookeeper集群一键启停脚本</h2><h3 id="slave-1"><a href="#slave-1" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure><h3 id="startzk-sh"><a href="#startzk-sh" class="headerlink" title="startzk.sh"></a>startzk.sh</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat /export/servers/zk/bin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup zkServer.sh start &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure><p>or</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">ssh $host &quot;source /etc/profile;nohup zkServer.sh start &gt; /dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">echo &quot;$host zk is running&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure><h3 id="stopzk-sh"><a href="#stopzk-sh" class="headerlink" title="stopzk.sh"></a>stopzk.sh</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cat /export/servers/zk/bin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;jps |grep QuorumPeerMain |cut -c 1-4 |xargs kill -s 9&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure><p>or</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">echo &quot;$host zk is stopping&quot;</span><br><span class="line">ssh $host &quot;source /etc/profile;nohup zkServer.sh stop &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>]]></content>
-      
-      
+      <tags>
+        <tag>apache</tag>
+        <tag>sqoop安装</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>(2)Apache Sqoop mysql数据导入hive表和hdfs</title>
+    <url>/2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/</url>
+    <content><![CDATA[<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p><font color=red>Sqoop测试表数据</font></p>
+<p>在mysql中创建数据库userdb，然后执行sql脚本：</p>
+<p>创建三张表: <strong>emp</strong>雇员表、 <strong>emp_add</strong>雇员地址表、<strong>emp_conn</strong>雇员联系表</p>
+<a id="more"></a>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`emp`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`emp`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`deg`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`salary`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`dept`</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=latin1;</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of emp</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1201&#x27;</span>, <span class="string">&#x27;gopal&#x27;</span>, <span class="string">&#x27;manager&#x27;</span>, <span class="string">&#x27;50000&#x27;</span>, <span class="string">&#x27;TP&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1202&#x27;</span>, <span class="string">&#x27;manisha&#x27;</span>, <span class="string">&#x27;Proof reader&#x27;</span>, <span class="string">&#x27;50000&#x27;</span>, <span class="string">&#x27;TP&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1203&#x27;</span>, <span class="string">&#x27;khalil&#x27;</span>, <span class="string">&#x27;php dev&#x27;</span>, <span class="string">&#x27;30000&#x27;</span>, <span class="string">&#x27;AC&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1204&#x27;</span>, <span class="string">&#x27;prasanth&#x27;</span>, <span class="string">&#x27;php dev&#x27;</span>, <span class="string">&#x27;30000&#x27;</span>, <span class="string">&#x27;AC&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1205&#x27;</span>, <span class="string">&#x27;kranthi&#x27;</span>, <span class="string">&#x27;admin&#x27;</span>, <span class="string">&#x27;20000&#x27;</span>, <span class="string">&#x27;TP&#x27;</span>);</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Table structure for `emp_add`</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`emp_add`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`emp_add`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`hno`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`street`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`city`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=latin1;</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of emp_add</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1201&#x27;</span>, <span class="string">&#x27;288A&#x27;</span>, <span class="string">&#x27;vgiri&#x27;</span>, <span class="string">&#x27;jublee&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1202&#x27;</span>, <span class="string">&#x27;108I&#x27;</span>, <span class="string">&#x27;aoc&#x27;</span>, <span class="string">&#x27;sec-bad&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1203&#x27;</span>, <span class="string">&#x27;144Z&#x27;</span>, <span class="string">&#x27;pgutta&#x27;</span>, <span class="string">&#x27;hyd&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1204&#x27;</span>, <span class="string">&#x27;78B&#x27;</span>, <span class="string">&#x27;old city&#x27;</span>, <span class="string">&#x27;sec-bad&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1205&#x27;</span>, <span class="string">&#x27;720X&#x27;</span>, <span class="string">&#x27;hitec&#x27;</span>, <span class="string">&#x27;sec-bad&#x27;</span>);</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Table structure for `emp_conn`</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`emp_conn`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`emp_conn`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`phno`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`email`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=latin1;</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of emp_conn</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1201&#x27;</span>, <span class="string">&#x27;2356742&#x27;</span>, <span class="string">&#x27;gopal@tp.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1202&#x27;</span>, <span class="string">&#x27;1661663&#x27;</span>, <span class="string">&#x27;manisha@tp.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1203&#x27;</span>, <span class="string">&#x27;8887776&#x27;</span>, <span class="string">&#x27;khalil@ac.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1204&#x27;</span>, <span class="string">&#x27;9988774&#x27;</span>, <span class="string">&#x27;prasanth@ac.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1205&#x27;</span>, <span class="string">&#x27;1231231&#x27;</span>, <span class="string">&#x27;kranthi@tp.com&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="全量导入mysql表数据到HDFS"><a href="#全量导入mysql表数据到HDFS" class="headerlink" title="全量导入mysql表数据到HDFS"></a>全量导入mysql表数据到HDFS</h2><p>“导入工具”导入单个表从RDBMS到HDFS。表中的每一行被视为HDFS的记录。所有记录都存储为文本文件的文本数据</p>
+<p>下面的语法用于将数据导入HDFS。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">sqoop import (generic-args) (import-args)</span></span><br></pre></td></tr></table></figure>
+
+<p>下面的命令用于从MySQL数据库服务器中的emp表导入HDFS。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line">--connect jdbc:mysql://node03:3306/userdb \</span><br><span class="line">--username root \</span><br><span class="line">--password 123456 \</span><br><span class="line">--delete-target-dir \</span><br><span class="line">--target-dir /sqoopresult \</span><br><span class="line">--table emp --m 1</span><br></pre></td></tr></table></figure>
+
+<p>其中 <strong>–target-dir</strong>  可以用来指定导出数据存放至HDFS的目录</p>
+<p><strong>mysql</strong>  <strong>jdbc  url</strong> 请使用 <strong>ip</strong> 地址。</p>
+<p>–m (或*–*num-mappers)参数指定map task数，默认是四个 </p>
+<p> <img src="3.png"></p>
+<p>为了验证在HDFS导入的数据，请使用以下命令查看导入的数据：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hdfs dfs -cat /sqoopresult/part-m-00000</span><br></pre></td></tr></table></figure>
+
+<p><img src="4.png"></p>
+<p>可以看出它会在HDFS上默认用逗号,分隔emp表的数据和字段。可以通过</p>
+<p>–fields-terminated-by ‘\t’来指定分隔符</p>
+<h2 id="全量导入mysql表数据到HIVE"><a href="#全量导入mysql表数据到HIVE" class="headerlink" title="全量导入mysql表数据到HIVE"></a>全量导入mysql表数据到HIVE</h2><h3 id="方式一：先复制表结构到hive中再导入数据"><a href="#方式一：先复制表结构到hive中再导入数据" class="headerlink" title="方式一：先复制表结构到hive中再导入数据"></a>方式一：先复制表结构到hive中再导入数据</h3><p>将关系型数据的表结构复制到hive中</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop <span class="keyword">create</span>-hive-<span class="keyword">table</span> \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node-1:3306/userdb \</span></span><br><span class="line"><span class="comment">--table emp_add \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--hive-table test.emp_add_sp</span></span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<p> –table emp_add为mysql中的数据库sqoopdb中的表。   </p>
+<p> –hive-table emp_add_sp 为hive中新建的表名称。</p>
+<p>从关系数据库导入文件到hive中</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--table emp_add \</span></span><br><span class="line"><span class="comment">--hive-table test.emp_add_sp \</span></span><br><span class="line"><span class="comment">--hive-import \</span></span><br><span class="line"><span class="comment">--m 1</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="0.jpg"></p>
+<h3 id="方式二：直接复制表结构数据到hive中"><a href="#方式二：直接复制表结构数据到hive中" class="headerlink" title="方式二：直接复制表结构数据到hive中"></a>方式二：直接复制表结构数据到hive中</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--table emp_conn \</span></span><br><span class="line"><span class="comment">--hive-import \</span></span><br><span class="line"><span class="comment">--m 1 \</span></span><br><span class="line"><span class="comment">--hive-database test;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="1.png"></p>
+<h2 id="导入表数据子集-where过滤"><a href="#导入表数据子集-where过滤" class="headerlink" title="导入表数据子集(where过滤)"></a>导入表数据子集(where过滤)</h2><p>–where 可以指定从关系数据库导入数据时的查询条件。它执行在数据库服务器相应的SQL查询，并将结果存储在HDFS的目标目录。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--where &quot;city =&#x27;sec-bad&#x27;&quot; \</span></span><br><span class="line"><span class="comment">--target-dir /wherequery \</span></span><br><span class="line"><span class="comment">--table emp_add --m 1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="2.png"></p>
+]]></content>
       <categories>
-          
-          <category> hadoop </category>
-          
+        <category>sqoop</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> hadoop </tag>
-            
-            <tag> kafka </tag>
-            
-            <tag> zookeeper </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>快速构建flink项目模板(java)</title>
-      <link href="2020/10/25/%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BAflink%E9%A1%B9%E7%9B%AE%E6%A8%A1%E6%9D%BF-java/"/>
-      <url>2020/10/25/%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BAflink%E9%A1%B9%E7%9B%AE%E6%A8%A1%E6%9D%BF-java/</url>
-      
-        <content type="html"><![CDATA[<h2 id="Flink-Java-项目模板"><a href="#Flink-Java-项目模板" class="headerlink" title="Flink-Java 项目模板"></a>Flink-Java 项目模板</h2><h3 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h3><p>唯一的要求是使用 <strong>Maven 3.0.4</strong> （或更高版本）和安装 <strong>Java 8.x</strong>。</p><p>如果有 Java 8 环境，运行下面的命令会输出如下版本信息： </p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> java -version</span></span><br><span class="line">java version &quot;1.8.0_161&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_161-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.161-b12, mixed mode)</span><br></pre></td></tr></table></figure><a id="more"></a><p>如果有 maven 环境，运行下面的命令会输出如下版本信息： </p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mvn -version</span></span><br><span class="line">Apache Maven 3.5.2 (138edd61fd100ec658bfa2d307c43b76940a5d7d; 2017-10-18T15:58:13+08:00)</span><br><span class="line">Maven home: F:\apache-maven-3.5.2</span><br><span class="line">Java version: 1.8.0_161, vendor: Oracle Corporation</span><br><span class="line">Java home: F:\jdk\jre</span><br><span class="line">Default locale: zh_CN, platform encoding: GBK</span><br><span class="line">OS name: &quot;windows 10&quot;, version: &quot;10.0&quot;, arch: &quot;amd64&quot;, family: &quot;windows&quot;</span><br></pre></td></tr></table></figure><h3 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h3><p>我们将使用 Flink Maven Archetype 来创建我们的项目结构和一些初始的默认依赖。在你的工作目录下，运行如下命令来创建项目：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mvn archetype:generate \</span></span><br><span class="line"><span class="bash">    -DarchetypeGroupId=org.apache.flink \</span></span><br><span class="line"><span class="bash">    -DarchetypeArtifactId=flink-quickstart-java \</span></span><br><span class="line"><span class="bash">    -DarchetypeVersion=1.10.0 \</span></span><br><span class="line"><span class="bash">    -DgroupId=my-flink-project \</span></span><br><span class="line"><span class="bash">    -DartifactId=my-flink-project \</span></span><br><span class="line"><span class="bash">    -Dversion=0.1 \</span></span><br><span class="line"><span class="bash">    -Dpackage=myflink \</span></span><br><span class="line"><span class="bash">    -DinteractiveMode=<span class="literal">false</span></span></span><br></pre></td></tr></table></figure><p><img src="1.png" alt="1608890993374"></p><p>你可以编辑上面的 groupId, artifactId, package 成你喜欢的路径。使用上面的参数，Maven 将自动为你创建如下所示的项目结构：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tree my-flink-project</span></span><br><span class="line">my-flink-project</span><br><span class="line">├── pom.xml</span><br><span class="line">└── src</span><br><span class="line">    └── main</span><br><span class="line">        ├── java</span><br><span class="line">        │   └── myflink</span><br><span class="line">        │       ├── BatchJob.java</span><br><span class="line">        │       └── StreamingJob.java</span><br><span class="line">        └── resources</span><br><span class="line">            └── log4j.properties</span><br></pre></td></tr></table></figure><p>我们的 pom.xml 文件已经包含了所需的 Flink 依赖，并且在 src/main/java 下有几个示例程序框架。</p><p>示例项目是一个 <strong>Maven project</strong>，它包含了两个类：<em>StreamingJob</em> 和 <em>BatchJob</em> 分别是 <em>DataStream</em> and <em>DataSet</em> 程序的基础骨架程序。 <em>main</em> 方法是程序的入口，既可用于IDE测试/执行，也可用于部署。 </p><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.10/zh/dev/projectsetup/java_api_quickstart.html">https://ci.apache.org/projects/flink/flink-docs-release-1.10/zh/dev/projectsetup/java_api_quickstart.html</a> </p><p>[2] <a href="http://wuchong.me/blog/2018/11/07/5-minutes-build-first-flink-application/">http://wuchong.me/blog/2018/11/07/5-minutes-build-first-flink-application/</a> </p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> flink </tag>
-            
-            <tag> java </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>kafak脚本命令的使用和原理</title>
-      <link href="2019/12/22/kafak%E8%84%9A%E6%9C%AC%E5%91%BD%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E5%8E%9F%E7%90%86/"/>
-      <url>2019/12/22/kafak%E8%84%9A%E6%9C%AC%E5%91%BD%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E5%8E%9F%E7%90%86/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>hive udf python</title>
-      <link href="2019/09/18/hive-udf-python/"/>
-      <url>2019/09/18/hive-udf-python/</url>
-      
-        <content type="html"><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Hive为我们提供了众多的内置函数，但是在实际的运用过程中仍然不能满足我们所有的需求.hive是用java开发的，本身提供了使用java去开发UDF的方式.而这里我们采用python的方式去实现UDF函数.</p><a id="more"></a><h3 id="DEMO实现"><a href="#DEMO实现" class="headerlink" title="DEMO实现"></a>DEMO实现</h3><p>我们这里用python自定义函数，去实现一个方法，利用身份证号去判断性别(18位身份证的倒数第二位偶数为女，奇数为男.15位身份证的倒数第一位偶数为女,奇数为男.).其实这个需求可以使用hive自带的function去进行解决.我们接下来使用2种方式去实现这个需求.</p><h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p>我们在hive上创建一个external表(名字person表),执行如下代码：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> person(</span><br><span class="line">   <span class="keyword">name</span> <span class="keyword">string</span>, </span><br><span class="line">   idcard <span class="keyword">string</span>) </span><br><span class="line">   PARTITIONED <span class="keyword">BY</span> (ds <span class="built_in">bigint</span>) </span><br><span class="line">   <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> SERDE <span class="string">&#x27;org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe&#x27;</span> <span class="keyword">WITH</span> SERDEPROPERTIES (</span><br><span class="line">  <span class="string">&#x27;colelction.delim&#x27;</span>=<span class="string">&#x27;,&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;field.delim&#x27;</span>=<span class="string">&#x27;|&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;line.delim&#x27;</span>=<span class="string">&#x27;\n&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;mapkey.delim&#x27;</span>=<span class="string">&#x27;:&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;serialization.format&#x27;</span>=<span class="string">&#x27;|&#x27;</span></span><br><span class="line">) <span class="keyword">STORED</span> <span class="keyword">AS</span> </span><br><span class="line">INPUTFORMAT <span class="string">&#x27;org.apache.hadoop.mapred.TextInputFormat&#x27;</span> </span><br><span class="line">OUTPUTFORMAT <span class="string">&#x27;org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat&#x27;</span> </span><br><span class="line">LOCATION <span class="string">&#x27;/user/bigdatadev/hive/bigdatadev.db/person&#x27;</span> </span><br><span class="line">TBLPROPERTIES (<span class="string">&#x27;transient_lastDdlTime&#x27;</span>=<span class="string">&#x27;1608551312&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure><p>该表两个字段，一个为name，另一个为idcard  数据格式如下: </p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">neil|411326199402110030</span><br><span class="line">pony|41132519950911004x</span><br><span class="line">jcak|12312423454556561</span><br><span class="line">tony|412345671234908</span><br></pre></td></tr></table></figure><p>field分隔符使用| 我们将数据放入hive的warehouse中: </p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -put person.txt /user/bigdatadev/hive/bigdatadev.db/person</span><br></pre></td></tr></table></figure><p>执行select，我们发现数据已经进入到hive了.</p><h3 id="使用Hive-Function去实现"><a href="#使用Hive-Function去实现" class="headerlink" title="使用Hive Function去实现"></a>使用Hive Function去实现</h3><p>我们可以执行一下的hql去实现</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> idcard,</span><br><span class="line"><span class="keyword">case</span> <span class="keyword">when</span> <span class="keyword">length</span>(idcard) = <span class="number">18</span> <span class="keyword">then</span></span><br><span class="line">             <span class="keyword">case</span> <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-2</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">1</span> <span class="keyword">then</span> <span class="string">&#x27;男&#x27;</span> </span><br><span class="line">             <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-2</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">0</span> <span class="keyword">then</span> <span class="string">&#x27;女&#x27;</span> </span><br><span class="line">             <span class="keyword">else</span> <span class="string">&#x27;unknown&#x27;</span> <span class="keyword">end</span> </span><br><span class="line">     <span class="keyword">when</span> <span class="keyword">length</span>(idcard) = <span class="number">15</span> <span class="keyword">then</span> </span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-1</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">1</span> <span class="keyword">then</span> <span class="string">&#x27;男&#x27;</span></span><br><span class="line">            <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-1</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">0</span> <span class="keyword">then</span> <span class="string">&#x27;女&#x27;</span></span><br><span class="line">            <span class="keyword">else</span> <span class="string">&#x27;unknown&#x27;</span> <span class="keyword">end</span></span><br><span class="line">     <span class="keyword">else</span> <span class="string">&#x27;不合法&#x27;</span> <span class="keyword">end</span> </span><br><span class="line"><span class="keyword">from</span> person;</span><br></pre></td></tr></table></figure><p>得到的结果如下(beeline下)：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+---------------------+------+--+</span><br><span class="line">|       idcard        | _c1  |</span><br><span class="line">+---------------------+------+--+</span><br><span class="line">| 12312423454556561   | 不合法  |</span><br><span class="line">| 123124234545565     | 男    |</span><br><span class="line">| 411325199308110030  | 男    |</span><br><span class="line">| 41132519950911004x  | 女    |</span><br></pre></td></tr></table></figure><h3 id="UDF编写"><a href="#UDF编写" class="headerlink" title="UDF编写"></a>UDF编写</h3><p>如下是我们的udf代码：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> sys.stdin:</span><br><span class="line">    detail = line.strip().split(<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(detail) != <span class="number">2</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        name = detail[<span class="number">0</span>]</span><br><span class="line">        idcard = detail[<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(idcard) == <span class="number">15</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">int</span>(idcard[-<span class="number">1</span>]) % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;女&quot;</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;男&quot;</span>]))</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">len</span>(idcard) == <span class="number">18</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">int</span>(idcard[-<span class="number">2</span>]) % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;女&quot;</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;男&quot;</span>]))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;身份信息不合法!&quot;</span>]))</span><br></pre></td></tr></table></figure><p>这里我们使用python的重定向，将hive控制台的输出进行split，<strong>split默认使用的为\t</strong>.然后根据split后的idcard的倒数第二位进行判断这个人的性别.</p><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>我们在hive中去执行查询时，报错的提示不是很详细.我们可以使用cat指令去测试python脚本的执行效果.   我们在终端中执行如下指令:</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat person.txt|python person.py</span><br></pre></td></tr></table></figure><p>输入结果如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">neil    411325199308110030  男</span><br><span class="line">pony    41132519950911004x  女</span><br><span class="line">jack    12312423454556561   身份信息不合法!</span><br><span class="line">tony    123124234545565 男</span><br></pre></td></tr></table></figure><p>说明我们的解析是成功的.</p><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>我们在hive中使用python定义的UDF函数要借助transform函数去执行.   transform函数的语法如下:</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TRANSFORM (&lt;<span class="keyword">columns</span>&gt;)</span><br><span class="line"><span class="keyword">USING</span> <span class="string">&#x27;python &lt;python_script&gt;&#x27;</span></span><br><span class="line"><span class="keyword">AS</span> (&lt;<span class="keyword">columns</span>&gt;)</span><br><span class="line"><span class="keyword">FROM</span> &lt;<span class="keyword">table</span>&gt;;</span><br></pre></td></tr></table></figure><p>transfrom和as的columns的个数不必一致.   我们首先需要将我们的person.py加载入</p><p>我们在hive中去执行如下代码:</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add file &#x2F;xxx&#x2F;person.py</span><br></pre></td></tr></table></figure><p>xxx为本地文件的路径.   然后使用transform函数执行:</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> transform(<span class="keyword">name</span>,idcard) <span class="keyword">USING</span> <span class="string">&#x27;python person.py&#x27;</span>  <span class="keyword">AS</span> (<span class="keyword">name</span>,idcard,gender) <span class="keyword">from</span> person;</span><br></pre></td></tr></table></figure><p>我们同样可以得到如下的结果：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">neil    411325199308110030  男</span><br><span class="line">pony    41132519950911004x  女</span><br><span class="line">jack    12312423454556561   身份信息不合法!</span><br><span class="line">tony    123124234545565 男</span><br></pre></td></tr></table></figure>]]></content>
-      
-      
+      <tags>
+        <tag>apache</tag>
+        <tag>sqoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>flink</title>
+    <url>/2020/12/17/flink/</url>
+    <content><![CDATA[<p>在<code>_config.yml</code>文件，找到<code>deploy</code>，进行以下配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https:&#x2F;&#x2F;github.com&#x2F;username&#x2F;username.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
-          
-          <category> hive </category>
-          
+        <category>test</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> hive </tag>
-            
-            <tag> udf </tag>
-            
-            <tag> python </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>(3)Apache Sqoop hive数据导出mysql</title>
-      <link href="2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/"/>
-      <url>2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
+      <tags>
+        <tag>flink</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>(3)Apache Sqoop hive数据导出mysql</title>
+    <url>/2019/08/28/3-Apache-Sqoop-hive%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BAmysql/</url>
+    <content><![CDATA[]]></content>
       <categories>
-          
-          <category> sqoop </category>
-          
+        <category>sqoop</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> sqoop </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>(2)Apache Sqoop mysql数据导入hive表和hdfs</title>
-      <link href="2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/"/>
-      <url>2019/08/28/2-Apache-Sqoop-mysql%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5hive%E8%A1%A8%E5%92%8Chdfs/</url>
-      
-        <content type="html"><![CDATA[<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p><font color=red>Sqoop测试表数据</font></p><p>在mysql中创建数据库userdb，然后执行sql脚本：</p><p>创建三张表: <strong>emp</strong>雇员表、 <strong>emp_add</strong>雇员地址表、<strong>emp_conn</strong>雇员联系表</p><a id="more"></a><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`emp`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`emp`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`deg`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`salary`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`dept`</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=latin1;</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of emp</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1201&#x27;</span>, <span class="string">&#x27;gopal&#x27;</span>, <span class="string">&#x27;manager&#x27;</span>, <span class="string">&#x27;50000&#x27;</span>, <span class="string">&#x27;TP&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1202&#x27;</span>, <span class="string">&#x27;manisha&#x27;</span>, <span class="string">&#x27;Proof reader&#x27;</span>, <span class="string">&#x27;50000&#x27;</span>, <span class="string">&#x27;TP&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1203&#x27;</span>, <span class="string">&#x27;khalil&#x27;</span>, <span class="string">&#x27;php dev&#x27;</span>, <span class="string">&#x27;30000&#x27;</span>, <span class="string">&#x27;AC&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1204&#x27;</span>, <span class="string">&#x27;prasanth&#x27;</span>, <span class="string">&#x27;php dev&#x27;</span>, <span class="string">&#x27;30000&#x27;</span>, <span class="string">&#x27;AC&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1205&#x27;</span>, <span class="string">&#x27;kranthi&#x27;</span>, <span class="string">&#x27;admin&#x27;</span>, <span class="string">&#x27;20000&#x27;</span>, <span class="string">&#x27;TP&#x27;</span>);</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Table structure for `emp_add`</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`emp_add`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`emp_add`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`hno`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`street`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`city`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=latin1;</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of emp_add</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1201&#x27;</span>, <span class="string">&#x27;288A&#x27;</span>, <span class="string">&#x27;vgiri&#x27;</span>, <span class="string">&#x27;jublee&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1202&#x27;</span>, <span class="string">&#x27;108I&#x27;</span>, <span class="string">&#x27;aoc&#x27;</span>, <span class="string">&#x27;sec-bad&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1203&#x27;</span>, <span class="string">&#x27;144Z&#x27;</span>, <span class="string">&#x27;pgutta&#x27;</span>, <span class="string">&#x27;hyd&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1204&#x27;</span>, <span class="string">&#x27;78B&#x27;</span>, <span class="string">&#x27;old city&#x27;</span>, <span class="string">&#x27;sec-bad&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_add`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1205&#x27;</span>, <span class="string">&#x27;720X&#x27;</span>, <span class="string">&#x27;hitec&#x27;</span>, <span class="string">&#x27;sec-bad&#x27;</span>);</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Table structure for `emp_conn`</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`emp_conn`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`emp_conn`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`phno`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`email`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=latin1;</span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of emp_conn</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1201&#x27;</span>, <span class="string">&#x27;2356742&#x27;</span>, <span class="string">&#x27;gopal@tp.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1202&#x27;</span>, <span class="string">&#x27;1661663&#x27;</span>, <span class="string">&#x27;manisha@tp.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1203&#x27;</span>, <span class="string">&#x27;8887776&#x27;</span>, <span class="string">&#x27;khalil@ac.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1204&#x27;</span>, <span class="string">&#x27;9988774&#x27;</span>, <span class="string">&#x27;prasanth@ac.com&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`emp_conn`</span> <span class="keyword">VALUES</span> (<span class="string">&#x27;1205&#x27;</span>, <span class="string">&#x27;1231231&#x27;</span>, <span class="string">&#x27;kranthi@tp.com&#x27;</span>);</span><br></pre></td></tr></table></figure><h2 id="全量导入mysql表数据到HDFS"><a href="#全量导入mysql表数据到HDFS" class="headerlink" title="全量导入mysql表数据到HDFS"></a>全量导入mysql表数据到HDFS</h2><p>“导入工具”导入单个表从RDBMS到HDFS。表中的每一行被视为HDFS的记录。所有记录都存储为文本文件的文本数据</p><p>下面的语法用于将数据导入HDFS。</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">sqoop import (generic-args) (import-args)</span></span><br></pre></td></tr></table></figure><p>下面的命令用于从MySQL数据库服务器中的emp表导入HDFS。</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line">--connect jdbc:mysql://node03:3306/userdb \</span><br><span class="line">--username root \</span><br><span class="line">--password 123456 \</span><br><span class="line">--delete-target-dir \</span><br><span class="line">--target-dir /sqoopresult \</span><br><span class="line">--table emp --m 1</span><br></pre></td></tr></table></figure><p>其中 <strong>–target-dir</strong>  可以用来指定导出数据存放至HDFS的目录</p><p><strong>mysql</strong>  <strong>jdbc  url</strong> 请使用 <strong>ip</strong> 地址。</p><p>–m (或*–*num-mappers)参数指定map task数，默认是四个 </p><p> <img src="3.png"></p><p>为了验证在HDFS导入的数据，请使用以下命令查看导入的数据：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -cat /sqoopresult/part-m-00000</span><br></pre></td></tr></table></figure><p><img src="4.png"></p><p>可以看出它会在HDFS上默认用逗号,分隔emp表的数据和字段。可以通过</p><p>–fields-terminated-by ‘\t’来指定分隔符</p><h2 id="全量导入mysql表数据到HIVE"><a href="#全量导入mysql表数据到HIVE" class="headerlink" title="全量导入mysql表数据到HIVE"></a>全量导入mysql表数据到HIVE</h2><h3 id="方式一：先复制表结构到hive中再导入数据"><a href="#方式一：先复制表结构到hive中再导入数据" class="headerlink" title="方式一：先复制表结构到hive中再导入数据"></a>方式一：先复制表结构到hive中再导入数据</h3><p>将关系型数据的表结构复制到hive中</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop <span class="keyword">create</span>-hive-<span class="keyword">table</span> \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node-1:3306/userdb \</span></span><br><span class="line"><span class="comment">--table emp_add \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--hive-table test.emp_add_sp</span></span><br></pre></td></tr></table></figure><p>其中：</p><p> –table emp_add为mysql中的数据库sqoopdb中的表。   </p><p> –hive-table emp_add_sp 为hive中新建的表名称。</p><p>从关系数据库导入文件到hive中</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--table emp_add \</span></span><br><span class="line"><span class="comment">--hive-table test.emp_add_sp \</span></span><br><span class="line"><span class="comment">--hive-import \</span></span><br><span class="line"><span class="comment">--m 1</span></span><br></pre></td></tr></table></figure><p><img src="0.jpg"></p><h3 id="方式二：直接复制表结构数据到hive中"><a href="#方式二：直接复制表结构数据到hive中" class="headerlink" title="方式二：直接复制表结构数据到hive中"></a>方式二：直接复制表结构数据到hive中</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--table emp_conn \</span></span><br><span class="line"><span class="comment">--hive-import \</span></span><br><span class="line"><span class="comment">--m 1 \</span></span><br><span class="line"><span class="comment">--hive-database test;</span></span><br></pre></td></tr></table></figure><p><img src="1.png"></p><h2 id="导入表数据子集-where过滤"><a href="#导入表数据子集-where过滤" class="headerlink" title="导入表数据子集(where过滤)"></a>导入表数据子集(where过滤)</h2><p>–where 可以指定从关系数据库导入数据时的查询条件。它执行在数据库服务器相应的SQL查询，并将结果存储在HDFS的目标目录。</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line"><span class="comment">--connect jdbc:mysql://node03:3306/userdb \</span></span><br><span class="line"><span class="comment">--username root \</span></span><br><span class="line"><span class="comment">--password 123456 \</span></span><br><span class="line"><span class="comment">--where &quot;city =&#x27;sec-bad&#x27;&quot; \</span></span><br><span class="line"><span class="comment">--target-dir /wherequery \</span></span><br><span class="line"><span class="comment">--table emp_add --m 1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure><p><img src="2.png"></p>]]></content>
-      
-      
+      <tags>
+        <tag>sqoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hadoop生态一键启停脚本</title>
+    <url>/2020/11/22/hadoop%E7%94%9F%E6%80%81%E4%B8%80%E9%94%AE%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h2 id="kafka集群一键启停脚本"><a href="#kafka集群一键启停脚本" class="headerlink" title="kafka集群一键启停脚本"></a>kafka集群一键启停脚本</h2><h3 id="slave"><a href="#slave" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure>
+
+<h3 id="startkafka-sh"><a href="#startkafka-sh" class="headerlink" title="startkafka.sh"></a>startkafka.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">        ssh $host &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-start.sh /export/servers/kafka/config/server.properties &gt;/dev/null 2&gt;&amp;1 &amp;&quot; </span><br><span class="line">	echo &quot;$host kafka is running&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="stopkafka-sh"><a href="#stopkafka-sh" class="headerlink" title="stopkafka.sh"></a>stopkafka.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/kafka/sbin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;jps |grep Kafka |cut -c 1-5 |xargs kill -s 9 &quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">  ssh $host &quot;source /etc/profile;nohup /export/servers/kafka/bin/kafka-server-stop.sh &gt;/dev/null 2&gt;&amp;1 &amp;&quot; </span><br><span class="line">  echo &quot;$host kafka is stopping&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="zookeeper集群一键启停脚本"><a href="#zookeeper集群一键启停脚本" class="headerlink" title="zookeeper集群一键启停脚本"></a>zookeeper集群一键启停脚本</h2><h3 id="slave-1"><a href="#slave-1" class="headerlink" title="slave"></a>slave</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">node01</span><br><span class="line">node02</span><br><span class="line">node03</span><br></pre></td></tr></table></figure>
+
+<h3 id="startzk-sh"><a href="#startzk-sh" class="headerlink" title="startzk.sh"></a>startzk.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/zk/bin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;nohup zkServer.sh start &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">	ssh $host &quot;source /etc/profile;nohup zkServer.sh start &gt; /dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">	echo &quot;$host zk is running&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<h3 id="stopzk-sh"><a href="#stopzk-sh" class="headerlink" title="stopzk.sh"></a>stopzk.sh</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /export/servers/zk/bin/slave | while read line</span><br><span class="line">do</span><br><span class="line">&#123;</span><br><span class="line"> echo $line</span><br><span class="line"> ssh $line &quot;source /etc/profile;jps |grep QuorumPeerMain |cut -c 1-4 |xargs kill -s 9&quot;</span><br><span class="line">&#125;&amp;</span><br><span class="line">wait</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">for host in node1 node2 node3</span><br><span class="line">do</span><br><span class="line">	echo &quot;$host zk is stopping&quot;</span><br><span class="line">	ssh $host &quot;source /etc/profile;nohup zkServer.sh stop &gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line"></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+]]></content>
       <categories>
-          
-          <category> sqoop </category>
-          
+        <category>hadoop</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> apache </tag>
-            
-            <tag> sqoop </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>(1)Apache Sqoop介绍及安装</title>
-      <link href="2019/08/28/1-Apache-Sqoop%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%AE%89%E8%A3%85/"/>
-      <url>2019/08/28/1-Apache-Sqoop%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%AE%89%E8%A3%85/</url>
-      
-        <content type="html"><![CDATA[<h2 id="sqoop介绍"><a href="#sqoop介绍" class="headerlink" title="sqoop介绍"></a>sqoop介绍</h2><p><font color=#008000> <strong>Apache Sqoop</strong> 是在Hadoop生态体系和RDBMS体系之间传送数据的一种工具。</font> </p><p>Sqoop工作机制是将导入或导出命令翻译成mapreduce程序来实现。在翻译出的mapreduce中主要是对inputformat和outputformat进行定制。</p><p>Hadoop生态系统包括：HDFS、Hive、Hbase等</p><p>RDBMS体系包括：Mysql、Oracle、DB2等</p><p>Sqoop可以理解为:”SQL 到 Hadoop 和 Hadoop 到SQL”。</p><a id="more"></a><p><img src="1.png"></p><p>站在Apache立场看待数据流转问题，可以分为数据的导入导出:</p><p>Import：数据导入。RDBMS—–&gt;Hadoop</p><p>Export：数据导出。Hadoop—-&gt;RDBMS</p><h2 id="sqoop安装"><a href="#sqoop安装" class="headerlink" title="sqoop安装"></a>sqoop安装</h2><p>安装sqoop的前提是已经具备java和hadoop的环境。</p><p>配置文件修改：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd $SQOOP_HOME/conf</span><br><span class="line">mv sqoop-env-template.sh sqoop-env.sh</span><br><span class="line">vi sqoop-env.sh</span><br><span class="line">export HADOOP_COMMON_HOME= /export/servers/hadoop-2.7.5 </span><br><span class="line">export HADOOP_MAPRED_HOME= /export/servers/hadoop-2.7.5</span><br><span class="line">export HIVE_HOME= /export/servers/hive</span><br></pre></td></tr></table></figure><p>加入mysql的jdbc驱动包</p><p>cp /hive/lib/mysql-connector-java-5.1.32.jar $SQOOP_HOME/lib/</p><p>验证启动</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop list-databases \</span><br><span class="line"> --connect jdbc:mysql://localhost:3306/ \</span><br><span class="line"> --username root --password 123456</span><br></pre></td></tr></table></figure><p>本命令会列出所有mysql的数据库。</p><p>到这里，整个Sqoop安装工作完成。</p><p><img src="2.png" alt="1608640133661"></p><ul><li><p>注意事项：命令携带参数必须出现在一行中，若换行就意味着自动提交执行，可通过\表示未结束。</p></li><li><p>全量导入数据到hdfs</p><ul><li><p>mysql的地址尽量不要使用localhost  请使用ip或者host</p></li><li><p>如果不指定  导入到hdfs默认分隔符是  “,”</p></li><li><p>可以通过– fields-terminated-by ‘\ t‘ 指定具体的分隔符</p></li><li><p>如果表的数据比较大 可以并行启动多个maptask执行导入操作，如果表没有主键，请指定根据哪个字段进行切分</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bin/sqoop import \</span><br><span class="line">--connect jdbc:mysql://node-1:3306/userdb \</span><br><span class="line">--username root \</span><br><span class="line">--password hadoop \</span><br><span class="line">--target-dir /sqoopresult214 \</span><br><span class="line">--fields-terminated-by &#x27;\t&#x27; \</span><br><span class="line">--split-by id \</span><br><span class="line">--table emp --m 2</span><br></pre></td></tr></table></figure></li></ul></li><li><p>导入表数据子集（query查询）</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">使用 query sql 语句来进行查找不能加参数--table ;</span><br><span class="line">并且必须要添加 where 条件;</span><br><span class="line">并且 where 条件后面必须带一个$CONDITIONS 这个字符串;</span><br><span class="line">并且这个 sql 语句必须用单引号，不能用双引号;</span><br></pre></td></tr></table></figure></li><li><p>增量数据的导入</p><ul><li>所谓的增量数据指的是上次至今中间新增加的数据</li><li>sqoop支持两种模式的增量导入 <ul><li>append追加 根据数值类型字段进行追加导入  大于指定的last-value</li><li>lastmodified 根据时间戳类型字段进行追加  <strong>大于等于</strong>指定的last-value<ul><li>注意在lastmodified 模式下 还分为两种情形：append  merge-key</li></ul></li></ul></li></ul></li><li><p>关于lastmodified 中的两种模式：</p><ul><li><p>append 只会追加增量数据到一个新的文件中  并且会产生数据的重复问题</p><p>因为默认是从指定的last-value 大于等于其值的数据开始导入</p></li><li><p>merge-key 把增量的数据合并到一个文件中  处理追加增量数据之外 如果之前的数据有变化修改</p><p>也可以进行修改操作 底层相当于进行了一次完整的mr作业。数据不会重复。</p></li></ul></li></ul>]]></content>
-      
-      
+      <tags>
+        <tag>hadoop</tag>
+        <tag>kafka</tag>
+        <tag>zookeeper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2016/09/18/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<a id="more"></a>
+
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>hexo+next个性化设置</title>
+    <url>/2016/11/15/hexo-next%E4%B8%AA%E6%80%A7%E5%8C%96%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<p>版本：<code>next5.14</code></p>
+<h2 id="去掉顶部黑线"><a href="#去掉顶部黑线" class="headerlink" title="去掉顶部黑线"></a>去掉顶部黑线</h2><p>找到目录<br><code>\themes\next\source\css\_custom\custom.styl</code><br>添加</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">.headband &#123;display:none;&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+
+
+<p><img src="1.jpg"></p>
+<h2 id="启用进度条"><a href="#启用进度条" class="headerlink" title="启用进度条"></a>启用进度条</h2><p>找到 <code>/themes/next/_config.yml</code> 修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pace: true         #false改为true，启用进度条</span><br></pre></td></tr></table></figure>
+
+<h2 id="更改进度条颜色"><a href="#更改进度条颜色" class="headerlink" title="更改进度条颜色"></a>更改进度条颜色</h2><p>找到 <code>/themes/next/layout/_partials/head.swig</code></p>
+<p>找到下面代码</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&#123;% if theme.pace %&#125;</span><br><span class="line">  &#123;% set pace_css_uri = url_for(theme.vendors._internal + &#x27;/pace/&#x27;+ theme.pace_theme +&#x27;.min.css?v=1.0.2&#x27;) %&#125;</span><br><span class="line">  &#123;% set pace_js_uri = url_for(theme.vendors._internal + &#x27;/pace/pace.min.js?v=1.0.2&#x27;) %&#125;</span><br><span class="line">    &#123;% if theme.vendors.pace %&#125;</span><br><span class="line">      &#123;% set pace_js_uri = theme.vendors.pace %&#125;</span><br><span class="line">    &#123;% endif %&#125;</span><br><span class="line">    &#123;% if theme.vendors.pace_css %&#125;</span><br><span class="line">      &#123;% set pace_css_uri = theme.vendors.pace_css %&#125;</span><br><span class="line">    &#123;% endif %&#125;</span><br><span class="line">  &lt;script src=&quot;&#123;&#123; pace_js_uri &#125;&#125;&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;link href=&quot;&#123;&#123; pace_css_uri &#125;&#125;&quot; rel=&quot;stylesheet&quot;&gt;</span><br><span class="line">  </span><br><span class="line">&lt;!-- /*进度条颜色*/ --&gt;</span><br><span class="line">&lt;style&gt;</span><br><span class="line">    .pace .pace-progress &#123;</span><br><span class="line">        background: #ff0303; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&lt;/style&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="next图片显示的问题"><a href="#next图片显示的问题" class="headerlink" title="next图片显示的问题"></a>next图片显示的问题</h2><p>主题配置文件_config.yml 里的post_asset_folder:这个选项设置为true</p>
+<p>图片本地目录</p>
+<p><img src="2.png"></p>
+<p>本地markdown设置</p>
+<p><img src="3.png"></p>
+<p>在本地markdown无法预览，但部署到远程是显示正常。</p>
+]]></content>
+      <tags>
+        <tag>hexo</tag>
+        <tag>next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hive udf python</title>
+    <url>/2019/09/18/hive-udf-python/</url>
+    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Hive为我们提供了众多的内置函数，但是在实际的运用过程中仍然不能满足我们所有的需求.hive是用java开发的，本身提供了使用java去开发UDF的方式.而这里我们采用python的方式去实现UDF函数.</p>
+<a id="more"></a>
+
+<h3 id="DEMO实现"><a href="#DEMO实现" class="headerlink" title="DEMO实现"></a>DEMO实现</h3><p>我们这里用python自定义函数，去实现一个方法，利用身份证号去判断性别(18位身份证的倒数第二位偶数为女，奇数为男.15位身份证的倒数第一位偶数为女,奇数为男.).其实这个需求可以使用hive自带的function去进行解决.我们接下来使用2种方式去实现这个需求.</p>
+<h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p>我们在hive上创建一个external表(名字person表),执行如下代码：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> person(</span><br><span class="line">   <span class="keyword">name</span> <span class="keyword">string</span>, </span><br><span class="line">   idcard <span class="keyword">string</span>) </span><br><span class="line">   PARTITIONED <span class="keyword">BY</span> (ds <span class="built_in">bigint</span>) </span><br><span class="line">   <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> SERDE <span class="string">&#x27;org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe&#x27;</span> <span class="keyword">WITH</span> SERDEPROPERTIES (</span><br><span class="line">  <span class="string">&#x27;colelction.delim&#x27;</span>=<span class="string">&#x27;,&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;field.delim&#x27;</span>=<span class="string">&#x27;|&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;line.delim&#x27;</span>=<span class="string">&#x27;\n&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;mapkey.delim&#x27;</span>=<span class="string">&#x27;:&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;serialization.format&#x27;</span>=<span class="string">&#x27;|&#x27;</span></span><br><span class="line">) <span class="keyword">STORED</span> <span class="keyword">AS</span> </span><br><span class="line">INPUTFORMAT <span class="string">&#x27;org.apache.hadoop.mapred.TextInputFormat&#x27;</span> </span><br><span class="line">OUTPUTFORMAT <span class="string">&#x27;org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat&#x27;</span> </span><br><span class="line">LOCATION <span class="string">&#x27;/user/bigdatadev/hive/bigdatadev.db/person&#x27;</span> </span><br><span class="line">TBLPROPERTIES (<span class="string">&#x27;transient_lastDdlTime&#x27;</span>=<span class="string">&#x27;1608551312&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>该表两个字段，一个为name，另一个为idcard  数据格式如下: </p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">neil|411326199402110030</span><br><span class="line">pony|41132519950911004x</span><br><span class="line">jcak|12312423454556561</span><br><span class="line">tony|412345671234908</span><br></pre></td></tr></table></figure>
+
+<p>field分隔符使用| 我们将数据放入hive的warehouse中: </p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">hdfs dfs -put person.txt /user/bigdatadev/hive/bigdatadev.db/person</span><br></pre></td></tr></table></figure>
+
+<p>执行select，我们发现数据已经进入到hive了.</p>
+<h3 id="使用Hive-Function去实现"><a href="#使用Hive-Function去实现" class="headerlink" title="使用Hive Function去实现"></a>使用Hive Function去实现</h3><p>我们可以执行一下的hql去实现</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> idcard,</span><br><span class="line"><span class="keyword">case</span> <span class="keyword">when</span> <span class="keyword">length</span>(idcard) = <span class="number">18</span> <span class="keyword">then</span></span><br><span class="line">             <span class="keyword">case</span> <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-2</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">1</span> <span class="keyword">then</span> <span class="string">&#x27;男&#x27;</span> </span><br><span class="line">             <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-2</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">0</span> <span class="keyword">then</span> <span class="string">&#x27;女&#x27;</span> </span><br><span class="line">             <span class="keyword">else</span> <span class="string">&#x27;unknown&#x27;</span> <span class="keyword">end</span> </span><br><span class="line">     <span class="keyword">when</span> <span class="keyword">length</span>(idcard) = <span class="number">15</span> <span class="keyword">then</span> </span><br><span class="line">            <span class="keyword">case</span> <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-1</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">1</span> <span class="keyword">then</span> <span class="string">&#x27;男&#x27;</span></span><br><span class="line">            <span class="keyword">when</span> <span class="keyword">substring</span>(idcard,<span class="number">-1</span>,<span class="number">1</span>) % <span class="number">2</span> = <span class="number">0</span> <span class="keyword">then</span> <span class="string">&#x27;女&#x27;</span></span><br><span class="line">            <span class="keyword">else</span> <span class="string">&#x27;unknown&#x27;</span> <span class="keyword">end</span></span><br><span class="line">     <span class="keyword">else</span> <span class="string">&#x27;不合法&#x27;</span> <span class="keyword">end</span> </span><br><span class="line"><span class="keyword">from</span> person;</span><br></pre></td></tr></table></figure>
+
+<p>得到的结果如下(beeline下)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+---------------------+------+--+</span><br><span class="line">|       idcard        | _c1  |</span><br><span class="line">+---------------------+------+--+</span><br><span class="line">| 12312423454556561   | 不合法  |</span><br><span class="line">| 123124234545565     | 男    |</span><br><span class="line">| 411325199308110030  | 男    |</span><br><span class="line">| 41132519950911004x  | 女    |</span><br></pre></td></tr></table></figure>
+
+<h3 id="UDF编写"><a href="#UDF编写" class="headerlink" title="UDF编写"></a>UDF编写</h3><p>如下是我们的udf代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> sys.stdin:</span><br><span class="line">    detail = line.strip().split(<span class="string">&quot;\t&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(detail) != <span class="number">2</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        name = detail[<span class="number">0</span>]</span><br><span class="line">        idcard = detail[<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(idcard) == <span class="number">15</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">int</span>(idcard[-<span class="number">1</span>]) % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;女&quot;</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;男&quot;</span>]))</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">len</span>(idcard) == <span class="number">18</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">int</span>(idcard[-<span class="number">2</span>]) % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;女&quot;</span>]))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;男&quot;</span>]))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">&quot;\t&quot;</span>.join([name,idcard,<span class="string">&quot;身份信息不合法!&quot;</span>]))</span><br></pre></td></tr></table></figure>
+
+<p>这里我们使用python的重定向，将hive控制台的输出进行split，<strong>split默认使用的为\t</strong>.然后根据split后的idcard的倒数第二位进行判断这个人的性别.</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>我们在hive中去执行查询时，报错的提示不是很详细.我们可以使用cat指令去测试python脚本的执行效果.   我们在终端中执行如下指令:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat person.txt|python person.py</span><br></pre></td></tr></table></figure>
+
+<p>输入结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">neil    411325199308110030  男</span><br><span class="line">pony    41132519950911004x  女</span><br><span class="line">jack    12312423454556561   身份信息不合法!</span><br><span class="line">tony    123124234545565 男</span><br></pre></td></tr></table></figure>
+
+<p>说明我们的解析是成功的.</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>我们在hive中使用python定义的UDF函数要借助transform函数去执行.   transform函数的语法如下:</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TRANSFORM (&lt;<span class="keyword">columns</span>&gt;)</span><br><span class="line"><span class="keyword">USING</span> <span class="string">&#x27;python &lt;python_script&gt;&#x27;</span></span><br><span class="line"><span class="keyword">AS</span> (&lt;<span class="keyword">columns</span>&gt;)</span><br><span class="line"><span class="keyword">FROM</span> &lt;<span class="keyword">table</span>&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>transfrom和as的columns的个数不必一致.   我们首先需要将我们的person.py加载入</p>
+<p>我们在hive中去执行如下代码:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">add file &#x2F;xxx&#x2F;person.py</span><br></pre></td></tr></table></figure>
+
+<p>xxx为本地文件的路径.   然后使用transform函数执行:</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> transform(<span class="keyword">name</span>,idcard) <span class="keyword">USING</span> <span class="string">&#x27;python person.py&#x27;</span>  <span class="keyword">AS</span> (<span class="keyword">name</span>,idcard,gender) <span class="keyword">from</span> person;</span><br></pre></td></tr></table></figure>
+
+<p>我们同样可以得到如下的结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">neil    411325199308110030  男</span><br><span class="line">pony    41132519950911004x  女</span><br><span class="line">jack    12312423454556561   身份信息不合法!</span><br><span class="line">tony    123124234545565 男</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
-          
-          <category> sqoop </category>
-          
+        <category>hive</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> apache </tag>
-            
-            <tag> sqoop安装 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>hexo+next个性化设置</title>
-      <link href="2016/11/15/hexo-next%E4%B8%AA%E6%80%A7%E5%8C%96%E8%AE%BE%E7%BD%AE/"/>
-      <url>2016/11/15/hexo-next%E4%B8%AA%E6%80%A7%E5%8C%96%E8%AE%BE%E7%BD%AE/</url>
-      
-        <content type="html"><![CDATA[<p>版本：<code>next5.14</code></p><h2 id="去掉顶部黑线"><a href="#去掉顶部黑线" class="headerlink" title="去掉顶部黑线"></a>去掉顶部黑线</h2><p>找到目录<br><code>\themes\next\source\css\_custom\custom.styl</code><br>添加</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.headband &#123;display:none;&#125;</span><br></pre></td></tr></table></figure><a id="more"></a><p><img src="1.jpg"></p><h2 id="启用进度条"><a href="#启用进度条" class="headerlink" title="启用进度条"></a>启用进度条</h2><p>找到 <code>/themes/next/_config.yml</code> 修改</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pace: true         #false改为true，启用进度条</span><br></pre></td></tr></table></figure><h2 id="更改进度条颜色"><a href="#更改进度条颜色" class="headerlink" title="更改进度条颜色"></a>更改进度条颜色</h2><p>找到 <code>/themes/next/layout/_partials/head.swig</code></p><p>找到下面代码</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;% if theme.pace %&#125;</span><br><span class="line">  &#123;% set pace_css_uri = url_for(theme.vendors._internal + &#x27;/pace/&#x27;+ theme.pace_theme +&#x27;.min.css?v=1.0.2&#x27;) %&#125;</span><br><span class="line">  &#123;% set pace_js_uri = url_for(theme.vendors._internal + &#x27;/pace/pace.min.js?v=1.0.2&#x27;) %&#125;</span><br><span class="line">    &#123;% if theme.vendors.pace %&#125;</span><br><span class="line">      &#123;% set pace_js_uri = theme.vendors.pace %&#125;</span><br><span class="line">    &#123;% endif %&#125;</span><br><span class="line">    &#123;% if theme.vendors.pace_css %&#125;</span><br><span class="line">      &#123;% set pace_css_uri = theme.vendors.pace_css %&#125;</span><br><span class="line">    &#123;% endif %&#125;</span><br><span class="line">  &lt;script src=&quot;&#123;&#123; pace_js_uri &#125;&#125;&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;link href=&quot;&#123;&#123; pace_css_uri &#125;&#125;&quot; rel=&quot;stylesheet&quot;&gt;</span><br><span class="line">  </span><br><span class="line">&lt;!-- /*进度条颜色*/ --&gt;</span><br><span class="line">&lt;style&gt;</span><br><span class="line">    .pace .pace-progress &#123;</span><br><span class="line">        background: #ff0303; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&lt;/style&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;% endif %&#125;</span><br></pre></td></tr></table></figure><h2 id="next图片显示的问题"><a href="#next图片显示的问题" class="headerlink" title="next图片显示的问题"></a>next图片显示的问题</h2><p>主题配置文件_config.yml 里的post_asset_folder:这个选项设置为true</p><p>图片本地目录</p><p><img src="2.png"></p><p>本地markdown设置</p><p><img src="3.png"></p><p>在本地markdown无法预览，但部署到远程是显示正常。</p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> hexo </tag>
-            
-            <tag> next </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Hello World</title>
-      <link href="2016/09/18/hello-world/"/>
-      <url>2016/09/18/hello-world/</url>
-      
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><a id="more"></a><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-  
-  
+      <tags>
+        <tag>hive</tag>
+        <tag>udf</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hive查询支持的函数</title>
+    <url>/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<a id="more"></a>
+
+<h1 id="一、关系运算："><a href="#一、关系运算：" class="headerlink" title="一、关系运算："></a>一、关系运算：</h1><h1 id="等值比较"><a href="#等值比较" class="headerlink" title="等值比较: ="></a>等值比较: =</h1><p>语法：A=B</p>
+<p>操作类型：所有基本类型</p>
+<p>描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为</p>
+<blockquote>
+<p>NULL,均返回 FALSE;</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1=1; 1</p>
+<p>hive&gt; select 1 from tablename where NULL = NULL; OK</p>
+<h1 id="等值比较-lt-gt"><a href="#等值比较-lt-gt" class="headerlink" title="等值比较:&lt;=&gt;"></a>等值比较:&lt;=&gt;</h1><p>语法：A &lt;=&gt; B</p>
+<p>操作类型：所有基本类型</p>
+<p>描述：如果 A 和 B 都是非 NULL 值，则返回结果和=一样，如果两者都为 NULL，返回 TRUE,</p>
+<p>如果有一个为 NULL，则返回 FALSE。举例：</p>
+<p>hive&gt; select 1 from tablename where NULL &lt;=&gt; NULL; OK</p>
+<p>1</p>
+<h1 id="不等值比较-lt-gt-和"><a href="#不等值比较-lt-gt-和" class="headerlink" title="不等值比较: &lt;&gt;和!="></a>不等值比较: &lt;&gt;和!=</h1><p>语法: A &lt;&gt; B A != B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 与表达式 B 不相等，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &lt;&gt; 2;</p>
+<blockquote>
+<p>1</p>
+</blockquote>
+<h1 id="小于比较-lt"><a href="#小于比较-lt" class="headerlink" title="小于比较: &lt;"></a>小于比较: &lt;</h1><p>语法: A &lt; B</p>
+<p>操作类型: 所有基本类型</p>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于</p>
+<blockquote>
+<p>表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &lt; 2;</p>
+<p>1</p>
+<h1 id="小于等于比较-lt"><a href="#小于等于比较-lt" class="headerlink" title="小于等于比较: &lt;="></a>小于等于比较: &lt;=</h1><p>语法: A &lt;= B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &lt;= 1;</p>
+<p>1</p>
+<h1 id="大于比较-gt"><a href="#大于比较-gt" class="headerlink" title="大于比较: &gt;"></a>大于比较: &gt;</h1><p>语法: A &gt; B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 2 &gt; 1;</p>
+<p>1</p>
+<h1 id="大于等于比较-gt"><a href="#大于等于比较-gt" class="headerlink" title="大于等于比较: &gt;="></a>大于等于比较: &gt;=</h1><p>语法: A &gt;= B</p>
+<p>操作类型: 所有基本类型</p>
+<blockquote>
+<p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 &gt;= 1;</p>
+<p>1</p>
+<h2 id="注意：String-的比较要注意-常用的时间比较可以先-to-date-之后再比较"><a href="#注意：String-的比较要注意-常用的时间比较可以先-to-date-之后再比较" class="headerlink" title="注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)"></a>注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)</h2><p>hive&gt; select * from tablename; OK</p>
+<p>2011111209 00:00:00 2011111209</p>
+<p>hive&gt; select a,b,a&lt;b,a&gt;b,a=b from tablename;</p>
+<p>2011111209 00:00:00 2011111209 false true false</p>
+<h1 id="区间比较"><a href="#区间比较" class="headerlink" title="区间比较"></a>区间比较</h1><p>语法: A [NOT] BETWEEN B AND C</p>
+<p>操作类型: 所有类型</p>
+<p>描述: 如果 A、B、C 有任一个为 NULL,则返回 FALSE. 等价于 B &lt;= A &lt; C.</p>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 between 1 and 2; OK</p>
+<p>1</p>
+<h1 id="空值判断-IS-NULL"><a href="#空值判断-IS-NULL" class="headerlink" title="空值判断: IS NULL"></a>空值判断: IS NULL</h1><p>语法: A IS NULL</p>
+<p>操作类型: 所有类型</p>
+<p>描述: 如果表达式 A 的值为 NULL，则为 TRUE；否则为 FALSE</p>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where null is null; 1</p>
+<h1 id="非空判断-IS-NOT-NULL"><a href="#非空判断-IS-NOT-NULL" class="headerlink" title="非空判断: IS NOT NULL"></a>非空判断: IS NOT NULL</h1><p>语法: A IS NOT NULL</p>
+<p>操作类型: 所有类型</p>
+<p>描述: 如果表达式 A 的值为 NULL，则为 FALSE；否则为 TRUE</p>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where 1 is not null; 1</p>
+<h1 id="LIKE-比较-LIKE"><a href="#LIKE-比较-LIKE" class="headerlink" title="LIKE 比较: LIKE"></a>LIKE 比较: LIKE</h1><p>语法: A LIKE B</p>
+<p>操作类型: strings</p>
+<blockquote>
+<p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合表达式 B 的正则语法，则为 TRUE；否则为 FALSE。B 中字符”_“表示任意单个字符，而字符”%”表示任意数量的字符。</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot%&#39;; 1</p>
+<p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot [ ]&#39;; 1</p>
+<h2 id="注意：否定比较时候用-NOT-A-LIKE-B"><a href="#注意：否定比较时候用-NOT-A-LIKE-B" class="headerlink" title="注意：否定比较时候用 NOT A LIKE B"></a>注意：否定比较时候用 NOT A LIKE B</h2><p>hive&gt; select 1 from tablename where NOT &#39;football&#39; like &#39;fff%&#39;; 1</p>
+<h1 id="JAVA-的-LIKE-操作-RLIKE"><a href="#JAVA-的-LIKE-操作-RLIKE" class="headerlink" title="JAVA 的 LIKE 操作: RLIKE"></a>JAVA 的 LIKE 操作: RLIKE</h1><p>语法: A RLIKE B</p>
+<p>操作类型: strings</p>
+<blockquote>
+<p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合 JAVA 正则表达式 B 的正则语法，则为 TRUE；否则为 FALSE。</p>
+</blockquote>
+<p>举例：</p>
+<p>hive&gt; select 1 from tablename where &#39;footbar’ rlike &#39;^f.*r$‘; 1</p>
+<h2 id="注意：判断一个字符串是否全为数字："><a href="#注意：判断一个字符串是否全为数字：" class="headerlink" title="注意：判断一个字符串是否全为数字："></a>注意：判断一个字符串是否全为数字：</h2><p>hive&gt;select 1 from tablename where &#39;123456&#39; rlike &#39;^\\d+$&#39;; 1</p>
+<p>hive&gt; select 1 from tablename where &#39;123456aa&#39; rlike &#39;^\\d+$&#39;;</p>
+<h1 id="REGEXP-操作-REGEXP"><a href="#REGEXP-操作-REGEXP" class="headerlink" title="REGEXP 操作: REGEXP"></a>REGEXP 操作: REGEXP</h1><p>语法: A REGEXP B</p>
+<p>操作类型: strings</p>
+<p>描述: 功能与 RLIKE 相同举例：</p>
+<p>hive&gt; select 1 from tablename where &#39;footbar&#39; REGEXP &#39;^f.*r$&#39;; 1</p>
+]]></content>
+      <tags>
+        <tag>hive</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kafak脚本命令的使用和原理</title>
+    <url>/2019/12/22/kafak%E8%84%9A%E6%9C%AC%E5%91%BD%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>快速构建flink项目模板(java)</title>
+    <url>/2020/10/25/%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BAflink%E9%A1%B9%E7%9B%AE%E6%A8%A1%E6%9D%BF-java/</url>
+    <content><![CDATA[<h2 id="Flink-Java-项目模板"><a href="#Flink-Java-项目模板" class="headerlink" title="Flink-Java 项目模板"></a>Flink-Java 项目模板</h2><h3 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h3><p>唯一的要求是使用 <strong>Maven 3.0.4</strong> （或更高版本）和安装 <strong>Java 8.x</strong>。</p>
+<p>如果有 Java 8 环境，运行下面的命令会输出如下版本信息： </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> java -version</span></span><br><span class="line">java version &quot;1.8.0_161&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_161-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.161-b12, mixed mode)</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>如果有 maven 环境，运行下面的命令会输出如下版本信息： </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mvn -version</span></span><br><span class="line">Apache Maven 3.5.2 (138edd61fd100ec658bfa2d307c43b76940a5d7d; 2017-10-18T15:58:13+08:00)</span><br><span class="line">Maven home: F:\apache-maven-3.5.2</span><br><span class="line">Java version: 1.8.0_161, vendor: Oracle Corporation</span><br><span class="line">Java home: F:\jdk\jre</span><br><span class="line">Default locale: zh_CN, platform encoding: GBK</span><br><span class="line">OS name: &quot;windows 10&quot;, version: &quot;10.0&quot;, arch: &quot;amd64&quot;, family: &quot;windows&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h3><p>我们将使用 Flink Maven Archetype 来创建我们的项目结构和一些初始的默认依赖。在你的工作目录下，运行如下命令来创建项目：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mvn archetype:generate \</span></span><br><span class="line"><span class="bash">    -DarchetypeGroupId=org.apache.flink \</span></span><br><span class="line"><span class="bash">    -DarchetypeArtifactId=flink-quickstart-java \</span></span><br><span class="line"><span class="bash">    -DarchetypeVersion=1.10.0 \</span></span><br><span class="line"><span class="bash">    -DgroupId=my-flink-project \</span></span><br><span class="line"><span class="bash">    -DartifactId=my-flink-project \</span></span><br><span class="line"><span class="bash">    -Dversion=0.1 \</span></span><br><span class="line"><span class="bash">    -Dpackage=myflink \</span></span><br><span class="line"><span class="bash">    -DinteractiveMode=<span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
+
+<p><img src="1.png" alt="1608890993374"></p>
+<p>你可以编辑上面的 groupId, artifactId, package 成你喜欢的路径。使用上面的参数，Maven 将自动为你创建如下所示的项目结构：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tree my-flink-project</span></span><br><span class="line">my-flink-project</span><br><span class="line">├── pom.xml</span><br><span class="line">└── src</span><br><span class="line">    └── main</span><br><span class="line">        ├── java</span><br><span class="line">        │   └── myflink</span><br><span class="line">        │       ├── BatchJob.java</span><br><span class="line">        │       └── StreamingJob.java</span><br><span class="line">        └── resources</span><br><span class="line">            └── log4j.properties</span><br></pre></td></tr></table></figure>
+
+<p>我们的 pom.xml 文件已经包含了所需的 Flink 依赖，并且在 src/main/java 下有几个示例程序框架。</p>
+<p>示例项目是一个 <strong>Maven project</strong>，它包含了两个类：<em>StreamingJob</em> 和 <em>BatchJob</em> 分别是 <em>DataStream</em> and <em>DataSet</em> 程序的基础骨架程序。 <em>main</em> 方法是程序的入口，既可用于IDE测试/执行，也可用于部署。 </p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] <a href="https://ci.apache.org/projects/flink/flink-docs-release-1.10/zh/dev/projectsetup/java_api_quickstart.html">https://ci.apache.org/projects/flink/flink-docs-release-1.10/zh/dev/projectsetup/java_api_quickstart.html</a> </p>
+<p>[2] <a href="http://wuchong.me/blog/2018/11/07/5-minutes-build-first-flink-application/">http://wuchong.me/blog/2018/11/07/5-minutes-build-first-flink-application/</a> </p>
+]]></content>
+      <tags>
+        <tag>flink</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
 </search>
