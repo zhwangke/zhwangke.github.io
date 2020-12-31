@@ -3,7 +3,7 @@
   <entry>
     <title>hive查询支持的函数</title>
     <url>/2020/12/31/hive%E6%9F%A5%E8%AF%A2%E6%94%AF%E6%8C%81%E7%9A%84%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<h1 id="一、关系运算："><a href="#一、关系运算：" class="headerlink" title="一、关系运算："></a>一、关系运算：</h1><h1 id="等值比较"><a href="#等值比较" class="headerlink" title="等值比较: ="></a>等值比较: =</h1><p>语法：A=B</p>
+    <content><![CDATA[<h1 id="关系运算："><a href="#关系运算：" class="headerlink" title="关系运算："></a>关系运算：</h1><h2 id="等值比较"><a href="#等值比较" class="headerlink" title="等值比较: ="></a>等值比较: =</h2><p>语法：A=B</p>
 <p>操作类型：所有基本类型</p>
 <p>描述: 如果表达式 A 与表达式 B 相等，则为 TRUE；否则为 FALSE；只要有任意比较项为</p>
 <blockquote>
@@ -14,13 +14,13 @@
 <p>hive&gt; select 1 from tablename where NULL = NULL; OK</p>
 <a id="more"></a>
 
-<h1 id="等值比较-lt-gt"><a href="#等值比较-lt-gt" class="headerlink" title="等值比较:&lt;=&gt;"></a>等值比较:&lt;=&gt;</h1><p>语法：A &lt;=&gt; B</p>
+<h2 id="等值比较-lt-gt"><a href="#等值比较-lt-gt" class="headerlink" title="等值比较:&lt;=&gt;"></a>等值比较:&lt;=&gt;</h2><p>语法：A &lt;=&gt; B</p>
 <p>操作类型：所有基本类型</p>
 <p>描述：如果 A 和 B 都是非 NULL 值，则返回结果和=一样，如果两者都为 NULL，返回 TRUE,</p>
 <p>如果有一个为 NULL，则返回 FALSE。举例：</p>
 <p>hive&gt; select 1 from tablename where NULL &lt;=&gt; NULL; OK</p>
 <p>1</p>
-<h1 id="不等值比较-lt-gt-和"><a href="#不等值比较-lt-gt-和" class="headerlink" title="不等值比较: &lt;&gt;和!="></a>不等值比较: &lt;&gt;和!=</h1><p>语法: A &lt;&gt; B A != B</p>
+<h2 id="不等值比较-lt-gt-和"><a href="#不等值比较-lt-gt-和" class="headerlink" title="不等值比较: &lt;&gt;和!="></a>不等值比较: &lt;&gt;和!=</h2><p>语法: A &lt;&gt; B A != B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 与表达式 B 不相等，则为 TRUE；否则为 FALSE</p>
@@ -30,7 +30,7 @@
 <blockquote>
 <p>1</p>
 </blockquote>
-<h1 id="小于比较-lt"><a href="#小于比较-lt" class="headerlink" title="小于比较: &lt;"></a>小于比较: &lt;</h1><p>语法: A &lt; B</p>
+<h2 id="小于比较-lt"><a href="#小于比较-lt" class="headerlink" title="小于比较: &lt;"></a>小于比较: &lt;</h2><p>语法: A &lt; B</p>
 <p>操作类型: 所有基本类型</p>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于</p>
 <blockquote>
@@ -39,7 +39,7 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 &lt; 2;</p>
 <p>1</p>
-<h1 id="小于等于比较-lt"><a href="#小于等于比较-lt" class="headerlink" title="小于等于比较: &lt;="></a>小于等于比较: &lt;=</h1><p>语法: A &lt;= B</p>
+<h2 id="小于等于比较-lt"><a href="#小于等于比较-lt" class="headerlink" title="小于等于比较: &lt;="></a>小于等于比较: &lt;=</h2><p>语法: A &lt;= B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 小于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
@@ -47,7 +47,7 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 &lt;= 1;</p>
 <p>1</p>
-<h1 id="大于比较-gt"><a href="#大于比较-gt" class="headerlink" title="大于比较: &gt;"></a>大于比较: &gt;</h1><p>语法: A &gt; B</p>
+<h2 id="大于比较-gt"><a href="#大于比较-gt" class="headerlink" title="大于比较: &gt;"></a>大于比较: &gt;</h2><p>语法: A &gt; B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于表达式 B，则为 TRUE；否则为 FALSE</p>
@@ -55,7 +55,7 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 2 &gt; 1;</p>
 <p>1</p>
-<h1 id="大于等于比较-gt"><a href="#大于等于比较-gt" class="headerlink" title="大于等于比较: &gt;="></a>大于等于比较: &gt;=</h1><p>语法: A &gt;= B</p>
+<h2 id="大于等于比较-gt"><a href="#大于等于比较-gt" class="headerlink" title="大于等于比较: &gt;="></a>大于等于比较: &gt;=</h2><p>语法: A &gt;= B</p>
 <p>操作类型: 所有基本类型</p>
 <blockquote>
 <p>描述: 如果表达式 A 为 NULL，或者表达式 B 为 NULL，返回 NULL；如果表达式 A 大于或者等于表达式 B，则为 TRUE；否则为 FALSE</p>
@@ -63,27 +63,28 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 &gt;= 1;</p>
 <p>1</p>
-<h2 id="注意：String-的比较要注意-常用的时间比较可以先-to-date-之后再比较"><a href="#注意：String-的比较要注意-常用的时间比较可以先-to-date-之后再比较" class="headerlink" title="注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)"></a>注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)</h2><p>hive&gt; select * from tablename; OK</p>
+<p>注意：String 的比较要注意(常用的时间比较可以先 to_date 之后再比较)</p>
+<p>hive&gt; select * from tablename; OK</p>
 <p>2011111209 00:00:00 2011111209</p>
 <p>hive&gt; select a,b,a&lt;b,a&gt;b,a=b from tablename;</p>
 <p>2011111209 00:00:00 2011111209 false true false</p>
-<h1 id="区间比较"><a href="#区间比较" class="headerlink" title="区间比较"></a>区间比较</h1><p>语法: A [NOT] BETWEEN B AND C</p>
+<h2 id="区间比较"><a href="#区间比较" class="headerlink" title="区间比较"></a>区间比较</h2><p>语法: A [NOT] BETWEEN B AND C</p>
 <p>操作类型: 所有类型</p>
 <p>描述: 如果 A、B、C 有任一个为 NULL,则返回 FALSE. 等价于 B &lt;= A &lt; C.</p>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 between 1 and 2; OK</p>
 <p>1</p>
-<h1 id="空值判断-IS-NULL"><a href="#空值判断-IS-NULL" class="headerlink" title="空值判断: IS NULL"></a>空值判断: IS NULL</h1><p>语法: A IS NULL</p>
+<h2 id="空值判断-IS-NULL"><a href="#空值判断-IS-NULL" class="headerlink" title="空值判断: IS NULL"></a>空值判断: IS NULL</h2><p>语法: A IS NULL</p>
 <p>操作类型: 所有类型</p>
 <p>描述: 如果表达式 A 的值为 NULL，则为 TRUE；否则为 FALSE</p>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where null is null; 1</p>
-<h1 id="非空判断-IS-NOT-NULL"><a href="#非空判断-IS-NOT-NULL" class="headerlink" title="非空判断: IS NOT NULL"></a>非空判断: IS NOT NULL</h1><p>语法: A IS NOT NULL</p>
+<h2 id="非空判断-IS-NOT-NULL"><a href="#非空判断-IS-NOT-NULL" class="headerlink" title="非空判断: IS NOT NULL"></a>非空判断: IS NOT NULL</h2><p>语法: A IS NOT NULL</p>
 <p>操作类型: 所有类型</p>
 <p>描述: 如果表达式 A 的值为 NULL，则为 FALSE；否则为 TRUE</p>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where 1 is not null; 1</p>
-<h1 id="LIKE-比较-LIKE"><a href="#LIKE-比较-LIKE" class="headerlink" title="LIKE 比较: LIKE"></a>LIKE 比较: LIKE</h1><p>语法: A LIKE B</p>
+<h2 id="LIKE-比较-LIKE"><a href="#LIKE-比较-LIKE" class="headerlink" title="LIKE 比较: LIKE"></a>LIKE 比较: LIKE</h2><p>语法: A LIKE B</p>
 <p>操作类型: strings</p>
 <blockquote>
 <p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合表达式 B 的正则语法，则为 TRUE；否则为 FALSE。B 中字符”_“表示任意单个字符，而字符”%”表示任意数量的字符。</p>
@@ -91,17 +92,19 @@
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot%&#39;; 1</p>
 <p>hive&gt; select 1 from tablename where &#39;football&#39; like &#39;foot [ ]&#39;; 1</p>
-<h2 id="注意：否定比较时候用-NOT-A-LIKE-B"><a href="#注意：否定比较时候用-NOT-A-LIKE-B" class="headerlink" title="注意：否定比较时候用 NOT A LIKE B"></a>注意：否定比较时候用 NOT A LIKE B</h2><p>hive&gt; select 1 from tablename where NOT &#39;football&#39; like &#39;fff%&#39;; 1</p>
-<h1 id="JAVA-的-LIKE-操作-RLIKE"><a href="#JAVA-的-LIKE-操作-RLIKE" class="headerlink" title="JAVA 的 LIKE 操作: RLIKE"></a>JAVA 的 LIKE 操作: RLIKE</h1><p>语法: A RLIKE B</p>
+<p>注意：否定比较时候用 NOT A LIKE B</p>
+<p>hive&gt; select 1 from tablename where NOT &#39;football&#39; like &#39;fff%&#39;; 1</p>
+<h2 id="JAVA-的-LIKE-操作-RLIKE"><a href="#JAVA-的-LIKE-操作-RLIKE" class="headerlink" title="JAVA 的 LIKE 操作: RLIKE"></a>JAVA 的 LIKE 操作: RLIKE</h2><p>语法: A RLIKE B</p>
 <p>操作类型: strings</p>
 <blockquote>
 <p>描述: 如果字符串 A 或者字符串 B 为 NULL，则返回 NULL；如果字符串 A 符合 JAVA 正则表达式 B 的正则语法，则为 TRUE；否则为 FALSE。</p>
 </blockquote>
 <p>举例：</p>
 <p>hive&gt; select 1 from tablename where &#39;footbar’ rlike &#39;^f.*r$‘; 1</p>
-<h2 id="注意：判断一个字符串是否全为数字："><a href="#注意：判断一个字符串是否全为数字：" class="headerlink" title="注意：判断一个字符串是否全为数字："></a>注意：判断一个字符串是否全为数字：</h2><p>hive&gt;select 1 from tablename where &#39;123456&#39; rlike &#39;^\\d+$&#39;; 1</p>
+<p>注意：判断一个字符串是否全为数字：</p>
+<p>hive&gt;select 1 from tablename where &#39;123456&#39; rlike &#39;^\\d+$&#39;; 1</p>
 <p>hive&gt; select 1 from tablename where &#39;123456aa&#39; rlike &#39;^\\d+$&#39;;</p>
-<h1 id="REGEXP-操作-REGEXP"><a href="#REGEXP-操作-REGEXP" class="headerlink" title="REGEXP 操作: REGEXP"></a>REGEXP 操作: REGEXP</h1><p>语法: A REGEXP B</p>
+<h2 id="REGEXP-操作-REGEXP"><a href="#REGEXP-操作-REGEXP" class="headerlink" title="REGEXP 操作: REGEXP"></a>REGEXP 操作: REGEXP</h2><p>语法: A REGEXP B</p>
 <p>操作类型: strings</p>
 <p>描述: 功能与 RLIKE 相同举例：</p>
 <p>hive&gt; select 1 from tablename where &#39;footbar&#39; REGEXP &#39;^f.*r$&#39;; 1</p>
